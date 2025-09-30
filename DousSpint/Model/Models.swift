@@ -18,6 +18,7 @@ struct TaskItem: Identifiable, Codable {
     let tags: [String]
 }
 
+
 struct SpinResult: Identifiable, Codable {
     let id: UUID
     let taskId: UUID
@@ -106,4 +107,12 @@ enum TabItem: CaseIterable {
             FavoritesView()
         }
     }
+}
+
+struct OnboardingPage {
+    let title: String
+    let description: String
+    let imageName: String
+    let color: Color
+    //let bgImage: String
 }
