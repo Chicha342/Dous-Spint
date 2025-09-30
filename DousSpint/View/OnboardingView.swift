@@ -42,40 +42,25 @@ struct OnboardingView: View {
         }
     }
     
-    var backgroundColor: Color {
-        switch settings.selectedTheme {
-        case .light:
-            return .white
-        case .dark:
-            return Color(r: 49, g: 7, b: 59)
-        case .system:
-            return Color(UIColor { trait in
-                trait.userInterfaceStyle == .dark ?
-                UIColor(Color(r: 49, g: 7, b: 59)) :
-                    .white
-            })
-        }
-    }
-    
     private var pages: [OnboardingPage] {
         [
             OnboardingPage(
                 title: "Spin the Wheel",
                 description: "Discover inspiring daily challenges.",
                 imageName: "Wheel",
-                color: backgroundColor
+                color: settings.backgroundColor
             ),
             OnboardingPage(
                 title: "Simple & Meaningful",
                 description: "Small actions, big impact on your life.",
                 imageName: "taskCard",
-                color: backgroundColor
+                color: settings.backgroundColor
             ),
             OnboardingPage(
                 title: "Track & Grow",
                 description: "Build streaks, celebrate progress.",
                 imageName: "Graph",
-                color: backgroundColor
+                color: settings.backgroundColor
             )
         ]
     }

@@ -8,11 +8,26 @@
 import SwiftUI
 
 struct StatisticsView: View {
+    @EnvironmentObject var settings: SettingsViewModel
+    
     var body: some View {
-        Text("StatisticsView")
+        ZStack{
+            Rectangle()
+                .fill(settings.backgroundColor)
+                .ignoresSafeArea(edges: .all)
+            Text("StatisticsView")
+        }
     }
 }
 
 #Preview {
     StatisticsView()
+        .environmentObject(SettingsViewModel())
+        .colorScheme(.light)
+}
+
+#Preview {
+    StatisticsView()
+        .environmentObject(SettingsViewModel())
+        .colorScheme(.dark)
 }

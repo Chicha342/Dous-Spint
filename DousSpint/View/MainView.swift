@@ -73,6 +73,7 @@ struct MainView: View {
                             .renderingMode(.template)
                         
                         Text(tab.title)
+                            .font(.calistoga(size: 12))
                     }
                     .tag(tab)
             }
@@ -88,3 +89,9 @@ struct MainView: View {
     MainView()
         .preferredColorScheme(.light)
 }
+
+#Preview {
+    MainView()
+        .preferredColorScheme(.dark)
+}
+

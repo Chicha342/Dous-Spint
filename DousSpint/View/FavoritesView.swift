@@ -8,11 +8,26 @@
 import SwiftUI
 
 struct FavoritesView: View {
+    @EnvironmentObject var settings: SettingsViewModel
+    
     var body: some View {
-        Text("FavoritesView")
+        ZStack{
+            Rectangle()
+                .fill(settings.backgroundColor)
+                .ignoresSafeArea(edges: .all)
+            Text("FavoritesView")
+        }
     }
 }
 
 #Preview {
     FavoritesView()
+        .environmentObject(SettingsViewModel())
+        .colorScheme(.light)
+}
+
+#Preview {
+    FavoritesView()
+        .environmentObject(SettingsViewModel())
+        .colorScheme(.dark)
 }

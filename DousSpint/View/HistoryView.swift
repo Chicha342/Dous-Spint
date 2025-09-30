@@ -8,11 +8,26 @@
 import SwiftUI
 
 struct HistoryView: View {
+    @EnvironmentObject var settings: SettingsViewModel
+    
     var body: some View {
-        Text("HistoryView")
+        ZStack{
+            Rectangle()
+                .fill(settings.backgroundColor)
+                .ignoresSafeArea(edges: .all)
+            Text("HistoryView")
+        }
     }
 }
 
 #Preview {
     HistoryView()
+        .environmentObject(SettingsViewModel())
+        .colorScheme(.light)
+}
+
+#Preview {
+    HistoryView()
+        .environmentObject(SettingsViewModel())
+        .colorScheme(.dark)
 }

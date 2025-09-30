@@ -17,6 +17,21 @@ class SettingsViewModel: ObservableObject {
         case .system: return nil
         }
     }
+    
+    var backgroundColor: Color {
+        switch self.selectedTheme {
+        case .light:
+            return .white
+        case .dark:
+            return Color(r: 49, g: 7, b: 59)
+        case .system:
+            return Color(UIColor { trait in
+                trait.userInterfaceStyle == .dark ?
+                UIColor(Color(r: 49, g: 7, b: 59)) :
+                    .white
+            })
+        }
+    }
 }
 
 enum AppTheme: String, CaseIterable {

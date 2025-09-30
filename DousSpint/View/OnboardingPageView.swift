@@ -14,7 +14,7 @@ struct OnboardingPageView: View {
     var body: some View {
         ZStack{
             Rectangle()
-                .fill(backgroundColor)
+                .fill(settings.backgroundColor)
                 .ignoresSafeArea()
             
             ZStack{
@@ -53,21 +53,6 @@ struct OnboardingPageView: View {
             return .init(r: 255, g: 123, b: 0)
         case .dark:
             return .init(r: 255, g: 220, b: 44)
-        }
-    }
-    
-    var backgroundColor: Color {
-        switch settings.selectedTheme {
-        case .light:
-            return .white
-        case .dark:
-            return Color(r: 49, g: 7, b: 59)
-        case .system:
-            return Color(UIColor { trait in
-                trait.userInterfaceStyle == .dark ?
-                UIColor(Color(r: 49, g: 7, b: 59)) :
-                    .white
-            })
         }
     }
 }

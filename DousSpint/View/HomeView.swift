@@ -8,11 +8,27 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    @EnvironmentObject var settings: SettingsViewModel
+    
     var body: some View {
-        Text("HomeView")
+        ZStack{
+            Rectangle()
+                .fill(settings.backgroundColor)
+                .ignoresSafeArea(edges: .all)
+            Text("HomeView")
+        }
+        
     }
 }
 
 #Preview {
     HomeView()
+        .environmentObject(SettingsViewModel())
+}
+
+#Preview {
+    HomeView()
+        .environmentObject(SettingsViewModel())
+        .colorScheme(.dark)
 }

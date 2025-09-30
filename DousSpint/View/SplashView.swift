@@ -14,10 +14,10 @@ struct SplashView: View {
     var body: some View {
         ZStack{
             Rectangle()
-                .fill(backgroundColor)
+                .fill(settings.backgroundColor)
                 .ignoresSafeArea()
             VStack{
-                Image("LogoWheel")
+                Image("logoWheel")
                     .resizable()
                     .frame(width: 86, height: 89)
                 
@@ -30,21 +30,6 @@ struct SplashView: View {
                     .font(.calistoga(size: 17))
                     .foregroundColor(textColor)
                     .padding(.top, 28)
-            }
-        }
-        
-        var backgroundColor: Color {
-            switch settings.selectedTheme {
-            case .light:
-                return .white
-            case .dark:
-                return Color(r: 49, g: 7, b: 59)
-            case .system:
-                return Color(UIColor { trait in
-                    trait.userInterfaceStyle == .dark ?
-                    UIColor(Color(r: 49, g: 7, b: 59)) :
-                        .white
-                })
             }
         }
         
