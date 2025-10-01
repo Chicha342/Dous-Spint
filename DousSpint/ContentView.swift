@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var isSplashActive = false
     @State private var showOnboarding = false
-    @StateObject private var settings = SettingsViewModel()
+    @StateObject private var settings = ViewModel()
     
     var body: some View {
         VStack {

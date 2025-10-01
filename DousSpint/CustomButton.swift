@@ -17,21 +17,20 @@ struct MainCustomButton: View {
                 .padding()
                 .font(.calistoga(size: 20))
                 .shadow(radius: 0, x: 0, y: 2)
-                
                 .foregroundColor(.init(r: 255, g: 235, b: 192))
                 .frame(maxWidth: 358, maxHeight: 56)
                 .background{
                     LinearGradient(colors:
-                    [Color.init(r: 245, g: 117, b: 127),
-                     Color.init(r: 244, g: 137, b: 27),
-                     Color.init(r: 244, g: 107, b: 6),
-                     Color.init(r: 213, g: 26, b: 8),
-                     Color.init(r: 169, g: 7, b: 4),
-                     Color.init(r: 169, g: 7, b: 4),
-                     Color.init(r: 213, g: 66, b: 27),
-                     Color.init(r: 222, g: 66, b: 23)],
-                     startPoint: .top,
-                     endPoint: .bottom)
+                                    [Color.init(r: 245, g: 117, b: 127),
+                                     Color.init(r: 244, g: 137, b: 27),
+                                     Color.init(r: 244, g: 107, b: 6),
+                                     Color.init(r: 213, g: 26, b: 8),
+                                     Color.init(r: 169, g: 7, b: 4),
+                                     Color.init(r: 169, g: 7, b: 4),
+                                     Color.init(r: 213, g: 66, b: 27),
+                                     Color.init(r: 222, g: 66, b: 23)],
+                                   startPoint: .top,
+                                   endPoint: .bottom)
                 }
                 .cornerRadius(60)
                 .overlay {
@@ -47,8 +46,58 @@ struct MainCustomButton: View {
 }
 
 #Preview {
-    VStack(spacing: 20) {
+    VStack(spacing: 0) {
         MainCustomButton(title: "Next", action: {})
+    }
+    .padding()
+}
+
+struct SecondCustomButton: View {
+    @EnvironmentObject var settings: ViewModel
+    @Environment(\.colorScheme) var systemScheme
+    
+    let title: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .padding()
+                .font(.poppins(.regular, size: 16))
+                .foregroundColor(settings.buttonTextColor)
+                .frame(maxWidth: 358, maxHeight: 56)
+                .background(settings.themeBackgroundButton(for: systemScheme))
+                .cornerRadius(8)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.init(r: 207, g: 65, b: 255), lineWidth: 1)
+                }
+        }
+    }
+}
+
+#Preview {
+    VStack(spacing: 10) {
+        HStack{
+            SecondCustomButton(title: "All", action: {})
+                .environmentObject(ViewModel())
+            
+            SecondCustomButton(title: "All", action: {})
+                .environmentObject(ViewModel())
+            
+            SecondCustomButton(title: "All", action: {})
+                .environmentObject(ViewModel())
+        }
+        HStack{
+            SecondCustomButton(title: "All", action: {})
+                .environmentObject(ViewModel())
+            
+            SecondCustomButton(title: "All", action: {})
+                .environmentObject(ViewModel())
+            
+            SecondCustomButton(title: "All", action: {})
+                .environmentObject(ViewModel())
+        }
     }
     .padding()
 }

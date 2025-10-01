@@ -116,3 +116,8 @@ struct OnboardingPage {
     let color: Color
     //let bgImage: String
 }
+
+struct CategoryButton {
+    let title: String
+    let action: () -> Void
+}

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SearchView: View {
-    @EnvironmentObject var settings: SettingsViewModel
+    @EnvironmentObject var settings: ViewModel
     
     var body: some View {
         ZStack{
@@ -22,12 +22,12 @@ struct SearchView: View {
 
 #Preview {
     SearchView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .colorScheme(.light)
 }
 
 #Preview {
     SearchView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .colorScheme(.dark)
 }

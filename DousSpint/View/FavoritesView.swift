@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    @EnvironmentObject var settings: SettingsViewModel
+    @EnvironmentObject var settings: ViewModel
     
     var body: some View {
         ZStack{
@@ -22,12 +22,12 @@ struct FavoritesView: View {
 
 #Preview {
     FavoritesView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .colorScheme(.light)
 }
 
 #Preview {
     FavoritesView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .colorScheme(.dark)
 }

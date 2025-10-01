@@ -10,7 +10,7 @@ import SwiftUI
 struct OnboardingView: View {
     @Binding var isOnboardingActive: Bool
     @State private var currentPage: Int = 0
-    @EnvironmentObject var settings: SettingsViewModel
+    @EnvironmentObject var settings: ViewModel
     
     private var textColor: Color {
         switch settings.selectedTheme {
@@ -134,11 +134,11 @@ struct OnboardingView: View {
 
 #Preview {
     OnboardingView(isOnboardingActive: .constant(true))
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
 }
 
 #Preview {
     OnboardingView(isOnboardingActive: .constant(true))
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .preferredColorScheme(.dark)
 }

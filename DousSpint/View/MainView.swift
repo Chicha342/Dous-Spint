@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var settingsViewModel = SettingsViewModel()
+    @StateObject private var settingsViewModel = ViewModel()
     
     init() {
         setupTapBarAppearance()

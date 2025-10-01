@@ -9,7 +9,7 @@ import SwiftUI
 
 struct OnboardingPageView: View {
     let page: OnboardingPage
-    @EnvironmentObject var settings: SettingsViewModel
+    @EnvironmentObject var settings: ViewModel
     
     var body: some View {
         ZStack{
@@ -23,7 +23,7 @@ struct OnboardingPageView: View {
                 VStack(spacing: 66){
                     Text(page.title)
                         .font(.calistogaTitle)
-                        .foregroundColor(textColor)
+                        .foregroundColor(settings.mainTextColor)
                     
                     
                     
@@ -34,34 +34,19 @@ struct OnboardingPageView: View {
                     
                     Text(page.description)
                         .font(.calistogaBody)
-                        .foregroundColor(textColor)
+                        .foregroundColor(settings.mainTextColor)
                 }
                 
             }
         }
     }
-    
-    private var textColor: Color {
-        switch settings.selectedTheme {
-        case .system:
-            return Color(UIColor { traitCollection in
-                return traitCollection.userInterfaceStyle == .dark ?
-                       UIColor(red: 255/255, green: 220/255, blue: 44/255, alpha: 1) :
-                       UIColor(red: 255/255, green: 123/255, blue: 0/255, alpha: 1)
-            })
-        case .light:
-            return .init(r: 255, g: 123, b: 0)
-        case .dark:
-            return .init(r: 255, g: 220, b: 44)
-        }
-    }
 }
 
 #Preview {
     OnboardingPageView(page: OnboardingPage(title: "Spin The Wheel",
                                             description: "Discover inspiring daily challenges.",
                                             imageName: "Wheel",
-                                            color: Color.init(r: 49, g: 7, b: 59))).environmentObject(SettingsViewModel())
+                                            color: Color.init(r: 49, g: 7, b: 59))).environmentObject(ViewModel())
     
 }
 
@@ -69,7 +54,7 @@ struct OnboardingPageView: View {
     OnboardingPageView(page: OnboardingPage(title: "Spin The Wheel",
                                             description: "Discover inspiring daily challenges.",
                                             imageName: "Wheel",
-                                            color: Color.init(r: 49, g: 7, b: 59))).environmentObject(SettingsViewModel())
+                                            color: Color.init(r: 49, g: 7, b: 59))).environmentObject(ViewModel())
         .preferredColorScheme(.dark)
     
 }

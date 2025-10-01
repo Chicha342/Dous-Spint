@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HistoryView: View {
-    @EnvironmentObject var settings: SettingsViewModel
+    @EnvironmentObject var settings: ViewModel
     
     var body: some View {
         ZStack{
@@ -22,12 +22,12 @@ struct HistoryView: View {
 
 #Preview {
     HistoryView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .colorScheme(.light)
 }
 
 #Preview {
     HistoryView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .colorScheme(.dark)
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SplashView: View {
     
-    @EnvironmentObject var settings: SettingsViewModel
+    @EnvironmentObject var settings: ViewModel
     
     var body: some View {
         ZStack{
@@ -53,11 +53,11 @@ struct SplashView: View {
 
 #Preview {
     SplashView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
 }
 
 #Preview {
     SplashView()
-        .environmentObject(SettingsViewModel())
+        .environmentObject(ViewModel())
         .preferredColorScheme(.dark)
 }
