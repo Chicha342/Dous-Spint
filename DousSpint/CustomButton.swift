@@ -84,22 +84,28 @@ struct SecondCustomButton: View {
         HStack{
             SecondCustomButton(title: "All", action: {})
                 .environmentObject(ViewModel())
+                .colorScheme(.light)
             
             SecondCustomButton(title: "All", action: {})
                 .environmentObject(ViewModel())
+                .colorScheme(.light)
             
             SecondCustomButton(title: "All", action: {})
                 .environmentObject(ViewModel())
+                .colorScheme(.light)
         }
         HStack{
             SecondCustomButton(title: "All", action: {})
                 .environmentObject(ViewModel())
+                .colorScheme(.dark)
             
             SecondCustomButton(title: "All", action: {})
                 .environmentObject(ViewModel())
+                .colorScheme(.dark)
             
             SecondCustomButton(title: "All", action: {})
                 .environmentObject(ViewModel())
+                .colorScheme(.dark)
         }
     }
     .padding()

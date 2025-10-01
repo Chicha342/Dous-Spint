@@ -18,6 +18,13 @@ class ViewModel: ObservableObject {
         }
     }
     
+    func changeTheme(_ theme: AppTheme) {
+        selectedTheme = theme
+    }
+    
+    @Published var navigationPath = NavigationPath()
+    @Published var showSettings = false
+    
     init() {
         if let savedTheme = UserDefaults.standard.string(forKey: "selectedTheme"),
            let theme = AppTheme(rawValue: savedTheme) {
@@ -56,7 +63,7 @@ class ViewModel: ObservableObject {
         case .light:
             return LinearGradient(
                 colors: [Color(r: 235, g: 176, b: 255),
-                         Color(r: 210, g: 150, b: 240)],
+                         Color(r: 188, g: 149, b: 155)],
                 startPoint: .top, endPoint: .bottom
             )
         case .dark:
@@ -74,7 +81,7 @@ class ViewModel: ObservableObject {
             )
             : LinearGradient(
                 colors: [Color(r: 235, g: 176, b: 255),
-                         Color(r: 210, g: 150, b: 240)],
+                         Color(r: 188, g: 149, b: 155)],
                 startPoint: .top, endPoint: .bottom
             )
         }
@@ -83,13 +90,14 @@ class ViewModel: ObservableObject {
     var buttonTextColor: Color {
         switch self.selectedTheme {
         case .light:
-            return .init(r: 234, g: 180, b: 248)
-        case .dark:
             return .init(r: 33, g: 0, b: 42)
+        case .dark:
+            return .init(r: 234, g: 180, b: 248)
         case .system:
             return Color(UIColor { trait in
                 trait.userInterfaceStyle == .dark ?
-                UIColor(Color(r: 234, g: 180, b: 248)) : UIColor(Color(r: 33, g: 0, b: 42))
+                UIColor(Color(r: 234, g: 180, b: 248)) :
+                UIColor(Color(r: 33, g: 0, b: 42))
             })
         }
     }
@@ -161,6 +169,35 @@ class ViewModel: ObservableObject {
                 Color(r: 169, g: 57, b: 218),
                 Color(r: 78, g: 0, b: 113)],
                                   startPoint: .top, endPoint: .bottom)
+        }
+    }
+    
+    func themeBackgroundContainers(for systemScheme: ColorScheme) -> LinearGradient {
+        switch self.selectedTheme {
+        case .light:
+            return LinearGradient(
+                colors: [Color(r: 233, g: 219, b: 255),
+                         Color(r: 246, g: 233, b: 255)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .dark:
+            return LinearGradient(
+                colors: [Color(r: 108, g: 0, b: 123),
+                         Color(r: 89, g: 0, b: 124)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .system:
+            return systemScheme == .dark
+            ? LinearGradient(
+                colors: [Color(r: 108, g: 0, b: 123),
+                         Color(r: 89, g: 0, b: 124)],
+                startPoint: .top, endPoint: .bottom
+            )
+            : LinearGradient(
+                colors: [Color(r: 233, g: 219, b: 255),
+                         Color(r: 246, g: 233, b: 255)],
+                startPoint: .top, endPoint: .bottom
+            )
         }
     }
 }

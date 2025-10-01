@@ -19,9 +19,16 @@ struct MainView: View {
         appearance.configureWithOpaqueBackground()
         
         appearance.backgroundColor = UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ?
-            UIColor(red: 49/255, green: 7/255, blue: 59/255, alpha: 1.0) :
-            UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+            switch settingsViewModel.selectedTheme {
+            case .light:
+                return UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+            case .dark:
+                return UIColor(red: 49/255, green: 7/255, blue: 59/255, alpha: 1.0)
+            case .system:
+                return traitCollection.userInterfaceStyle == .dark ?
+                UIColor(red: 49/255, green: 7/255, blue: 59/255, alpha: 1.0) :
+                UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1.0)
+            }
         }
         
         let poppinsLight = UIFont(name: "Poppins-Light", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .light)
@@ -67,17 +74,25 @@ struct MainView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             ForEach(TabItem.allCases, id: \.self) { tab in
-                tab.view
-                    .tabItem {
-                        Image(selectedTab == tab ? tab.iconSelected : tab.iconDefault)
-                            .renderingMode(.template)
-                        
-                        Text(tab.title)
-                            .font(.calistoga(size: 12))
-                    }
-                    .tag(tab)
+                NavigationStack {
+                    tab.view
+                        .navigationBarBackButtonHidden(true)
+                }
+                .tabItem {
+                    Image(selectedTab == tab ? tab.iconSelected : tab.iconDefault)
+                        .renderingMode(.template)
+                    
+                    Text(tab.title)
+                        .font(.calistoga(size: 12))
+                }
+                .tag(tab)
             }
         }
+        .fullScreenCover(isPresented: $settingsViewModel.showSettings, content: {
+            SettingsView()
+                .environmentObject(settingsViewModel)
+                .preferredColorScheme(settingsViewModel.colorScheme)
+        })
         .onChange(of: settingsViewModel.selectedTheme) { _ in
             setupTapBarAppearance()
         }

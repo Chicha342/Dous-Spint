@@ -20,7 +20,7 @@ struct CustomHeader: View {
                 Spacer()
                 
                 Button(action: {
-                    
+                    settingsViewModel.showSettings = true
                 }, label: {
                     Image("settingsIcon")
                         .padding(.trailing, 16)

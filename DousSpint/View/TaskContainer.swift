@@ -51,6 +51,7 @@ struct TaskContainer: View {
                 .font(.poppins(.medium, size: 16))
                 .foregroundColor(textColor)
                 .multilineTextAlignment(.center)
+                .lineLimit(1)
             
             HStack{
                 Group{
@@ -70,14 +71,14 @@ struct TaskContainer: View {
             
             HStack{
                 
-                DetailsCustomButton(title: "Details", action: { }, with: 130, height: 44)
+                DetailsCustomButton(title: "Details", action: { }, with: 135, height: 44)
                 
-                MainCustomButton(title: "Start", action: { }, width: 130, height: 44)
+                MainCustomButton(title: "Start", action: { }, width: 135, height: 44)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(themeBackgroundButton(for: systemScheme))
+        .background(settings.themeBackgroundButton(for: systemScheme))
         .cornerRadius(24)
         .overlay {
             RoundedRectangle(cornerRadius: 24)
@@ -85,34 +86,6 @@ struct TaskContainer: View {
         }
     }
     
-    func themeBackgroundButton(for systemScheme: ColorScheme) -> LinearGradient {
-        switch settings.selectedTheme {
-        case .light:
-            return LinearGradient(
-                colors: [Color(r: 233, g: 219, b: 255),
-                         Color(r: 246, g: 233, b: 255)],
-                startPoint: .top, endPoint: .bottom
-            )
-        case .dark:
-            return LinearGradient(
-                colors: [Color(r: 51, g: 13, b: 109),
-                         Color(r: 70, g: 8, b: 83)],
-                startPoint: .top, endPoint: .bottom
-            )
-        case .system:
-            return systemScheme == .dark
-            ? LinearGradient(
-                colors: [Color(r: 51, g: 13, b: 109),
-                         Color(r: 70, g: 8, b: 83)],
-                startPoint: .top, endPoint: .bottom
-            )
-            : LinearGradient(
-                colors: [Color(r: 233, g: 219, b: 255),
-                         Color(r: 246, g: 233, b: 255)],
-                startPoint: .top, endPoint: .bottom
-            )
-        }
-    }
 }
 
 #Preview {
