@@ -92,7 +92,7 @@ struct OnboardingView: View {
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 
-                MainCustomButton(title: "Next", action: handleButtonAction)
+                MainCustomButton(title: "Next", action: handleButtonAction, width: 358, height: 56)
                     .padding(.horizontal, 28)
                     .padding(.bottom, 28)
                 

@@ -29,9 +29,8 @@ struct ContentView: View {
         }
         .environmentObject(settings)
         .onAppear {
-            let isFirstLaunch = !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
-            
-            showOnboarding = isFirstLaunch
+            let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+            showOnboarding = !hasCompletedOnboarding
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 withAnimation {

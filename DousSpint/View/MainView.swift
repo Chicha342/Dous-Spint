@@ -78,9 +78,13 @@ struct MainView: View {
                     .tag(tab)
             }
         }
+        .onChange(of: settingsViewModel.selectedTheme) { _ in
+            setupTapBarAppearance()
+        }
         .accentColor(Color(red: 243/255, green: 0/255, blue: 237/255))
         .preferredColorScheme(settingsViewModel.colorScheme)
         .environmentObject(settingsViewModel)
+        
         
     }
 }

@@ -11,6 +11,9 @@ struct MainCustomButton: View {
     let title: String
     let action: () -> Void
     
+    let width: Int?
+    let height: Int?
+    
     var body: some View {
         Button(action: action) {
             Text(title)
@@ -18,7 +21,7 @@ struct MainCustomButton: View {
                 .font(.calistoga(size: 20))
                 .shadow(radius: 0, x: 0, y: 2)
                 .foregroundColor(.init(r: 255, g: 235, b: 192))
-                .frame(maxWidth: 358, maxHeight: 56)
+                .frame(width: CGFloat(width ?? 358), height: CGFloat(height ?? 56))
                 .background{
                     LinearGradient(colors:
                                     [Color.init(r: 245, g: 117, b: 127),
@@ -47,7 +50,7 @@ struct MainCustomButton: View {
 
 #Preview {
     VStack(spacing: 0) {
-        MainCustomButton(title: "Next", action: {})
+        MainCustomButton(title: "Next", action: {}, width: 300, height: 100)
     }
     .padding()
 }
@@ -101,3 +104,61 @@ struct SecondCustomButton: View {
     }
     .padding()
 }
+
+struct DetailsCustomButton: View {
+    @EnvironmentObject var settings: ViewModel
+    @Environment(\.colorScheme) var systemScheme
+    
+    let title: String
+    let action: () -> Void
+    
+    let with: Int
+    let height: Int
+    
+    var buttonTextColor: Color {
+        switch settings.selectedTheme {
+        case .light:
+            return .init(r: 203, g: 37, b: 247)
+        case .dark:
+            return .init(r: 230, g: 180, b: 248)
+        case .system:
+            return Color(UIColor { trait in
+                trait.userInterfaceStyle == .dark ?
+                UIColor(Color(r: 230, g: 180, b: 248)) : UIColor(Color(r: 203, g: 37, b: 247))
+            })
+        }
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack{
+                Text(title)
+                    .font(.calistoga(size: 17))
+                    .foregroundStyle(buttonTextColor)
+                
+                Spacer()
+                
+                Image("arrayRight")
+                    .resizable()
+                    .frame(width: 18, height: 18)
+                
+            }
+            .frame(width: CGFloat(with), height: CGFloat(height))
+            .padding(.horizontal)
+            .overlay(content: {
+                RoundedRectangle(cornerRadius: 60)
+                    .stroke(Color.init(r: 203, g: 37, b: 247), lineWidth: 1)
+                    
+            })
+            
+            
+        }
+    }
+}
+
+#Preview{
+    DetailsCustomButton(title: "Details", action: { }, with: 60, height: 44)
+    .environmentObject(ViewModel())
+}
+
+

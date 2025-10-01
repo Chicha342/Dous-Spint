@@ -14,6 +14,10 @@ struct HomeView: View {
     @State private var showTutorial: Bool = false
     @Environment(\.colorScheme) var systemScheme
     
+    @State private var currentTask: TaskItem? = nil
+    @State private var showTaskDetail = false
+    @State private var selectedTask: TaskItem? = nil
+    
     let categories: [CategoryButton] = [
         CategoryButton(title: "All", action: { print("All tapped") }),
         CategoryButton(title: "Body", action: { print("Body tapped") }),
@@ -28,6 +32,7 @@ struct HomeView: View {
             Rectangle()
                 .fill(settings.backgroundColor)
                 .ignoresSafeArea(edges: .all)
+            
             VStack{
                 //header
                 CustomHeader()
@@ -37,20 +42,24 @@ struct HomeView: View {
                         .resizable()
                         .frame(width: 331, height: 331)
                         .padding(.top, 29)
-                        .opacity(showTutorial ? 0.5 : 1)
-                        .opacity(settings.isLoading ? 0.5 : 1)
-                        .opacity(settings.mainError ? 0.5 : 1)
+                        .opacity(
+                            showTutorial || settings.isLoading || settings.mainError ? 0.5 : 1
+                        )
                     
                     MainCustomButton(title: "Spin", action: {
+                        guard settings.spinsLeftToday != 0 else {
+                            return settings.mainError = true
+                        }
+                        
                         showTutorial = false
-                    })
-                        .padding(.horizontal, 100)
-                        .padding(.top, 12)
-                        .opacity(settings.isLoading ? 0.5 : 1)
-                        .opacity(settings.mainError ? 0.5 : 1)
+                        spinWheel()
+                    }, width: 171, height: 56)
+                    .opacity(
+                        settings.isLoading || settings.mainError ? 0.5 : 1
+                    )
                     
                     
-                    Text("Spins left: \(2)/3") // Изменить
+                    Text("Spins left: \(settings.spinsLeftToday)/3")
                         .font(.poppins(.medium, size: 12))
                         .foregroundColor(settings.mainTextColor)
                         .padding(.top, 8)
@@ -63,9 +72,27 @@ struct HomeView: View {
                     .padding(.horizontal)
                     
                     Spacer()
+                    if !settings.myTasks.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            LazyVStack(spacing: 12) {
+                                ForEach(settings.myTasks) { task in
+                                    TaskContainer(task: task, onTap: {
+                                        selectedTask = task
+                                        showTaskDetail = true
+                                    })
+                                    .frame(maxWidth: .infinity)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top)
+                    }
+                        
+                    //Vstack end
                 }
-                
             }
+            
+            //Zstack
             if showTutorial {
                 Text("Spin the wheel to get your first task!")
                     .font(.calistoga(size: 20))
@@ -123,6 +150,23 @@ struct HomeView: View {
                 }
                 UserDefaults.standard.set(true, forKey: key)
             }
+        }
+    }
+    
+    private func spinWheel() {
+        guard settings.spinsLeftToday > 0 else { return }
+        
+        settings.isLoading = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            if let task = settings.spinWheel() {
+            } else {
+                settings.mainError = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    settings.mainError = false
+                }
+            }
+            settings.isLoading = false
         }
     }
 }
