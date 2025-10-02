@@ -59,23 +59,31 @@ struct SecondCustomButton: View {
     @EnvironmentObject var settings: ViewModel
     @Environment(\.colorScheme) var systemScheme
     
+    @State var isActive: Bool = false
+    
     let title: String
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
-            Text(title)
-                .padding()
-                .font(.poppins(.regular, size: 16))
-                .foregroundColor(settings.buttonTextColor)
-                .frame(maxWidth: 358, maxHeight: 56)
-                .background(settings.themeBackgroundButton(for: systemScheme))
-                .cornerRadius(8)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.init(r: 207, g: 65, b: 255), lineWidth: 1)
-                }
+        VStack{
+            Button(action: {
+                isActive.toggle()
+            }){
+                Text(title)
+                    .padding()
+                    .font(.poppins(.regular, size: 16))
+                    .foregroundColor(isActive ?  settings.selectedButtonTextColor : settings.buttonTextColor)
+                    .frame(maxWidth: 358, maxHeight: 56)
+                    .background(isActive ? settings.selectedBg(for: systemScheme) : settings.themeBackgroundButton(for: systemScheme))
+                    .cornerRadius(8)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.init(r: 207, g: 65, b: 255), lineWidth: 1)
+                    }
+            }
         }
+        
+        
     }
 }
 
@@ -154,7 +162,7 @@ struct DetailsCustomButton: View {
             .overlay(content: {
                 RoundedRectangle(cornerRadius: 60)
                     .stroke(Color.init(r: 203, g: 37, b: 247), lineWidth: 1)
-                    
+                
             })
             
             
@@ -164,7 +172,112 @@ struct DetailsCustomButton: View {
 
 #Preview{
     DetailsCustomButton(title: "Details", action: { }, with: 60, height: 44)
-    .environmentObject(ViewModel())
+        .environmentObject(ViewModel())
 }
 
 
+struct ResetButton: View {
+    let title: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: {
+            action()
+        }, label: {
+            Text(title)
+                .padding()
+                .foregroundColor(Color.init(r: 255, g: 187, b: 187))
+                .frame(maxWidth: .infinity)
+                .shadow(radius: 1, x: 0, y: 2)
+                .font(.calistoga(size: 20))
+                .background{
+                    LinearGradient(colors: [
+                        Color.init(r: 136, g: 0, b: 0),
+                        Color.init(r: 199, g: 0, b: 0)
+                    ], startPoint: .top, endPoint: .bottom)
+                }
+                .cornerRadius(60)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 60)
+                        .stroke(Color.init(r: 255, g: 27, b: 27), lineWidth: 2)
+                }
+        })
+    }
+}
+
+#Preview{
+    ResetButton(title: "Reset Progress", action: { })
+        .environmentObject(ViewModel())
+}
+
+
+struct ExportButton: View {
+    let title: String
+    let action: () -> Void
+    @Environment(\.colorScheme) var systemScheme
+    @EnvironmentObject var settings: ViewModel
+    
+    var body: some View {
+        VStack{
+            Button(action: {
+                action()
+            }, label: {
+                Text(title)
+                    .padding()
+                    .foregroundColor(Color.init(r: 234, g: 180, b: 248))
+                    .frame(maxWidth: .infinity)
+                    .shadow(radius: 1, x: 0, y: 2)
+                    .font(.calistoga(size: 20))
+                    .background(settings.customSettingsButtonBGcolor(for: systemScheme))
+                    .cornerRadius(60)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 60)
+                            .stroke(settings.setCustomStrokeForSettingsButton(), lineWidth: 2)
+                    }
+            })
+        }
+    }
+}
+
+#Preview{
+    ExportButton(title: "Export History", action: { })
+        .environmentObject(ViewModel())
+}
+
+struct CancelButton: View {
+    let title: String
+    let action: () -> Void
+    @Environment(\.colorScheme) var systemScheme
+    @EnvironmentObject var settings: ViewModel
+    
+    var body: some View {
+        VStack{
+            Button(action: {
+                action()
+            }, label: {
+                Text(title)
+                    .padding()
+                    .foregroundColor(Color.init(r: 225, g: 225, b: 225))
+                    .frame(maxWidth: .infinity)
+                    .shadow(radius: 1, x: 0, y: 2)
+                    .font(.calistoga(size: 20))
+                    .background{
+                        LinearGradient(colors: [
+                            Color.init(r: 134, g: 134, b: 134),
+                            Color.init(r: 193, g: 193, b: 193)
+                        ], startPoint: .top, endPoint: .bottom)
+                    }
+                    .cornerRadius(60)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 60)
+                            .stroke(Color.init(r: 140, g: 140, b: 140), lineWidth: 2)
+                    }
+            })
+        }
+    }
+}
+
+#Preview{
+    CancelButton(title: "Export History", action: { })
+        .environmentObject(ViewModel())
+}

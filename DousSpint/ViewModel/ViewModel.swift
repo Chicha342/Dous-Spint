@@ -32,6 +32,20 @@ class ViewModel: ObservableObject {
         }
     }
     
+    func showError() {
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.mainError = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation {
+                        self.mainError = false
+                    }
+                }
+            }
+        }
+    
     @Published var isLoading: Bool = false
     @Published var mainError: Bool = false
     
@@ -63,7 +77,7 @@ class ViewModel: ObservableObject {
         case .light:
             return LinearGradient(
                 colors: [Color(r: 235, g: 176, b: 255),
-                         Color(r: 188, g: 149, b: 155)],
+                         Color(r: 188, g: 149, b: 255)],
                 startPoint: .top, endPoint: .bottom
             )
         case .dark:
@@ -81,7 +95,7 @@ class ViewModel: ObservableObject {
             )
             : LinearGradient(
                 colors: [Color(r: 235, g: 176, b: 255),
-                         Color(r: 188, g: 149, b: 155)],
+                         Color(r: 188, g: 149, b: 255)],
                 startPoint: .top, endPoint: .bottom
             )
         }
@@ -99,6 +113,50 @@ class ViewModel: ObservableObject {
                 UIColor(Color(r: 234, g: 180, b: 248)) :
                 UIColor(Color(r: 33, g: 0, b: 42))
             })
+        }
+    }
+    
+    var selectedButtonTextColor: Color {
+        switch self.selectedTheme {
+        case .light:
+            return .init(r: 255, g: 255, b: 255)
+        case .dark:
+            return .init(r: 255, g: 245, b: 192)
+        case .system:
+            return Color(UIColor { trait in
+                trait.userInterfaceStyle == .dark ?
+                UIColor(Color(r: 255, g: 245, b: 192)) :
+                UIColor(Color(r: 255, g: 255, b: 255))
+            })
+        }
+    }
+    
+    func selectedBg(for systemScheme: ColorScheme) -> LinearGradient {
+        switch self.selectedTheme {
+        case .system:
+            systemScheme == .dark
+            ? LinearGradient(
+                colors: [Color(r: 77, g: 1, b: 87),
+                         Color(r: 102, g: 12, b: 62)],
+                startPoint: .top, endPoint: .bottom
+            )
+            : LinearGradient(
+                colors: [Color(r: 238, g: 111, b: 255),
+                         Color(r: 255, g: 42, b: 160)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .light:
+            LinearGradient(
+                colors: [Color(r: 238, g: 111, b: 255),
+                         Color(r: 255, g: 42, b: 160)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .dark:
+            LinearGradient(
+                colors: [Color(r: 77, g: 1, b: 87),
+                         Color(r: 102, g: 12, b: 62)],
+                startPoint: .top, endPoint: .bottom
+            )
         }
     }
     
@@ -200,6 +258,50 @@ class ViewModel: ObservableObject {
             )
         }
     }
+    
+    
+    func customSettingsButtonBGcolor(for systemScheme: ColorScheme) -> LinearGradient {
+        switch self.selectedTheme {
+        case .light:
+            return LinearGradient(
+                colors: [Color(r: 122, g: 58, b: 214),
+                         Color(r: 205, g: 61, b: 230)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .dark:
+            return LinearGradient(colors: [
+                Color.init(r: 46, g: 15, b: 105),
+                Color.init(r: 104, g: 11, b: 120)
+            ], startPoint: .top, endPoint: .bottom)
+        case .system:
+            return systemScheme == .dark
+            ? LinearGradient(colors: [
+                Color.init(r: 46, g: 15, b: 105),
+                Color.init(r: 104, g: 11, b: 120)
+            ], startPoint: .top, endPoint: .bottom)
+            : LinearGradient(
+                colors: [Color(r: 122, g: 58, b: 214),
+                         Color(r: 205, g: 61, b: 230)],
+                startPoint: .top, endPoint: .bottom
+            )
+        }
+    }
+     
+    func setCustomStrokeForSettingsButton() -> Color {
+        switch self.selectedTheme{
+        case .system:
+            return Color(UIColor { traitCollection in
+                return traitCollection.userInterfaceStyle == .dark ?
+                UIColor(red: 64/255, green: 20/255, blue: 131/255, alpha: 1) :
+                UIColor(red: 125/255, green: 56/255, blue: 255/255, alpha: 1)
+            })
+        case .light:
+            return Color.init(r: 125, g: 56, b: 255)
+        case .dark:
+            return Color.init(r: 64, g: 20, b: 131)
+        }
+    }
+    
 }
 
 enum AppTheme: String, CaseIterable {

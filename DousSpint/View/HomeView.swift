@@ -48,7 +48,8 @@ struct HomeView: View {
                     
                     MainCustomButton(title: "Spin", action: {
                         guard settings.spinsLeftToday != 0 else {
-                            return settings.mainError = true
+                            settings.showError()
+                            return
                         }
                         
                         showTutorial = false
@@ -87,12 +88,13 @@ struct HomeView: View {
                         .padding(.horizontal)
                         .padding(.top)
                     }
-                        
+                    
                     //Vstack end
                 }
             }
             
-            //Zstack
+        }
+        .overlay(content: {
             if showTutorial {
                 Text("Spin the wheel to get your first task!")
                     .font(.calistoga(size: 20))
@@ -130,7 +132,7 @@ struct HomeView: View {
                         .opacity(0.8)
                 }
             }
-        }
+        })
         .onAppear{
             handleFirstLaunch()
         }
@@ -160,13 +162,11 @@ struct HomeView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             if let task = settings.spinWheel() {
+                settings.isLoading = false
             } else {
-                settings.mainError = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    settings.mainError = false
-                }
+                settings.showError()
+                settings.isLoading = false
             }
-            settings.isLoading = false
         }
     }
 }

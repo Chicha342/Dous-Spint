@@ -12,11 +12,22 @@ struct SettingsView: View {
     @Environment(\.colorScheme) var systemScheme
     @Environment(\.dismiss) private var dismiss
     
+    @State private var isExportData = false
+    @State private var resetProgress = false
+    
+    @State private var isShowAbout = false
+    
+    @State private var isAutoStartNext = false
+    @State private var isHaptics = false
+    
     var body: some View {
         ZStack{
             Rectangle()
                 .fill(viewModel.backgroundColor)
                 .ignoresSafeArea()
+            
+            
+            
             VStack(alignment: .leading){
                 HStack(spacing: 14){
                     Button(action: {
@@ -32,107 +43,241 @@ struct SettingsView: View {
                     
                     Spacer()
                 }
+                .padding(.leading)
                 
-                Text("Theme")
-                    .font(.poppins(.medium, size: 12))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(viewModel.themeBackgroundContainers(for: systemScheme))
-                    .cornerRadius(5)
-                    .padding(.top)
-                
-                Button(action: {
-                    withAnimation {
-                        viewModel.changeTheme(.system)
-                    }
-                }, label: {
-                    HStack{
-                        Circle()
-                            .fill(Color.clear)
-                            .frame(width: 24, height: 24)
-                            .overlay {
-                                Circle()
-                                    .stroke(style: StrokeStyle(lineWidth: 2))
-                                    .fill(viewModel.selectedTheme == .system ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
-                                
-                                if viewModel.selectedTheme == .system {
-                                    Circle()
-                                        .fill(Color.init(r: 243, g: 0, b: 237))
-                                        .frame(width: 12, height: 12)
-                                }
-                            }
-                        
-                        Text("System")
-                            .font(.poppins(.regular, size: 16))
+                ScrollView{
+                    VStack(alignment: .leading){
+                        Text("THEME")
+                            .font(.poppins(.medium, size: 12))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(viewModel.themeBackgroundContainers(for: systemScheme))
+                            .cornerRadius(5)
                             .foregroundColor(viewModel.buttonTextColor)
+                            .padding(.top)
                         
-                        Spacer()
-                    }
-                })
-                
-                Button(action: {
-                    withAnimation {
-                        viewModel.changeTheme(.light)
-                    }
-                }, label: {
-                    HStack{
-                        Circle()
-                            .fill(Color.clear)
-                            .frame(width: 24, height: 24)
-                            .overlay {
-                                ZStack{
+                        VStack{
+                            Button(action: {
+                                withAnimation {
+                                    viewModel.changeTheme(.system)
+                                }
+                            }, label: {
+                                HStack{
                                     Circle()
-                                        .stroke(style: StrokeStyle(lineWidth: 2))
-                                        .fill((viewModel.selectedTheme == .light ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185)))
+                                        .fill(Color.clear)
+                                        .frame(width: 24, height: 24)
+                                        .overlay {
+                                            Circle()
+                                                .stroke(style: StrokeStyle(lineWidth: 2))
+                                                .fill(viewModel.selectedTheme == .system ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
+                                            
+                                            if viewModel.selectedTheme == .system {
+                                                Circle()
+                                                    .fill(Color.init(r: 243, g: 0, b: 237))
+                                                    .frame(width: 12, height: 12)
+                                            }
+                                        }
                                     
-                                    if viewModel.selectedTheme == .light  {
-                                        Circle()
-                                            .fill(Color.init(r: 243, g: 0, b: 237))
-                                            .frame(width: 12, height: 12)
-                                    }
+                                    Text("System")
+                                        .font(.poppins(.regular, size: 16))
+                                        .foregroundColor(viewModel.buttonTextColor)
+                                    
+                                    Spacer()
                                 }
-                            }
-                        
-                        Text("Light")
-                            .font(.poppins(.regular, size: 16))
-                            .foregroundColor(viewModel.buttonTextColor)
-                        
-                        Spacer()
-                    }
-                })
-                
-                Button(action: {
-                    withAnimation {
-                        viewModel.changeTheme(.dark)
-                    }
-                }, label: {
-                    HStack{
-                        Circle()
-                            .fill(Color.clear)
-                            .frame(width: 24, height: 24)
-                            .overlay {
-                                Circle()
-                                    .stroke(style: StrokeStyle(lineWidth: 2))
-                                    .fill(viewModel.selectedTheme == .dark ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
-                                
-                                if viewModel.selectedTheme == .dark {
+                            })
+                            
+                            Button(action: {
+                                withAnimation {
+                                    viewModel.changeTheme(.light)
+                                }
+                            }, label: {
+                                HStack{
                                     Circle()
-                                        .fill(Color.init(r: 243, g: 0, b: 237))
-                                        .frame(width: 12, height: 12)
+                                        .fill(Color.clear)
+                                        .frame(width: 24, height: 24)
+                                        .overlay {
+                                            ZStack{
+                                                Circle()
+                                                    .stroke(style: StrokeStyle(lineWidth: 2))
+                                                    .fill((viewModel.selectedTheme == .light ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185)))
+                                                
+                                                if viewModel.selectedTheme == .light  {
+                                                    Circle()
+                                                        .fill(Color.init(r: 243, g: 0, b: 237))
+                                                        .frame(width: 12, height: 12)
+                                                }
+                                            }
+                                        }
+                                    
+                                    Text("Light")
+                                        .font(.poppins(.regular, size: 16))
+                                        .foregroundColor(viewModel.buttonTextColor)
+                                    
+                                    Spacer()
                                 }
-                            }
+                            })
+                            
+                            Button(action: {
+                                withAnimation {
+                                    viewModel.changeTheme(.dark)
+                                }
+                            }, label: {
+                                HStack{
+                                    Circle()
+                                        .fill(Color.clear)
+                                        .frame(width: 24, height: 24)
+                                        .overlay {
+                                            Circle()
+                                                .stroke(style: StrokeStyle(lineWidth: 2))
+                                                .fill(viewModel.selectedTheme == .dark ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
+                                            
+                                            if viewModel.selectedTheme == .dark {
+                                                Circle()
+                                                    .fill(Color.init(r: 243, g: 0, b: 237))
+                                                    .frame(width: 12, height: 12)
+                                            }
+                                        }
+                                    
+                                    Text("Dark")
+                                        .font(.poppins(.regular, size: 16))
+                                        .foregroundColor(viewModel.buttonTextColor)
+                                    
+                                    Spacer()
+                                }
+                            })
+                        }
                         
-                        Text("Dark")
-                            .font(.poppins(.regular, size: 16))
+                        Text("PREFERENCES")
+                            .font(.poppins(.medium, size: 12))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
                             .foregroundColor(viewModel.buttonTextColor)
+                            .background(viewModel.themeBackgroundContainers(for: systemScheme))
+                            .cornerRadius(5)
+                            .padding(.top)
+                        
+                        HStack{
+                            Text("Daily spin limit")
+                                .font(.poppins(.regular, size: 16))
+                                .foregroundColor(viewModel.buttonTextColor)
+                            
+                            Spacer()
+                            
+                            Text("\(viewModel.spinsLeftToday)")
+                                .font(.poppins(.medium, size: 20))
+                                .foregroundColor(Color.init(r: 243, g: 0, b: 237))
+                        }
+                        .padding(.trailing)
+                        
+                        HStack{
+                            Text("Auto-start next")
+                                .font(.poppins(.regular, size: 16))
+                                .foregroundColor(viewModel.buttonTextColor)
+                            
+                            Spacer()
+                            
+                            Toggle(isOn: $isAutoStartNext, label: {  })
+                                .frame(width: 51, height: 31)
+                                .toggleStyle(.switch)
+                                .tint(Color.init(r: 243, g: 0, b: 237))
+                        }
+                        .padding(.trailing)
+                        
+                        HStack{
+                            Text("Haptics")
+                                .font(.poppins(.regular, size: 16))
+                                .foregroundColor(viewModel.buttonTextColor)
+                            
+                            Spacer()
+                            
+                            Toggle(isOn: $isHaptics, label: {  })
+                                .frame(width: 51, height: 31)
+                                .toggleStyle(.switch)
+                                .tint(Color.init(r: 243, g: 0, b: 237))
+                        }
+                        .padding(.trailing)
+                        
+                        Text("DATA")
+                            .font(.poppins(.medium, size: 12))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .foregroundColor(viewModel.buttonTextColor)
+                            .background(viewModel.themeBackgroundContainers(for: systemScheme))
+                            .cornerRadius(5)
+                            .padding(.top)
+                        
+                        VStack{
+                            ExportButton(title: "Export History", action: {
+                                isExportData = true
+                            })
+                            
+                            ResetButton(title: "Reset Progress", action: {
+                                resetProgress = true
+                            })
+                        }
+                        .padding(.trailing)
+                        
+                        Button(action: {
+                            isShowAbout = true
+                        }, label: {
+                            VStack(alignment: .leading){
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.init(r: 246, g: 64, b: 241))
+                                    .frame(maxWidth: .infinity, maxHeight: 1)
+                                
+                                HStack{
+                                    Text("About")
+                                        .padding(.vertical, 12)
+                                        .font(.poppins(.regular, size: 16))
+                                        .foregroundColor(viewModel.buttonTextColor)
+                                    
+                                    Spacer()
+                                    
+                                    Image("arrowRight")
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                }
+                                
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.init(r: 246, g: 64, b: 241))
+                                    .frame(maxWidth: .infinity, maxHeight: 1)
+                            }
+                            
+                        })
+                        .padding(.top, 56)
+                        .padding(.horizontal, 10)
                         
                         Spacer()
                     }
-                })
-                
-                Spacer()
+                    .padding(.leading)
+                }
             }
-            .padding(.leading)
+            
+            if isExportData{
+                CustomAlert(actionPrimaryButton: {
+                    
+                }, actionSecondaryButton: {
+                    withAnimation {
+                        isExportData = false
+                    }
+                }, title: " Export History?", description: "Your history will be saved as a CSV file. Proceed with export?", isReset: false)
+                .padding(.horizontal, 8)
+            }
+            
+            if resetProgress{
+                CustomAlert(actionPrimaryButton: {
+                    
+                }, actionSecondaryButton: {
+                    withAnimation {
+                        resetProgress = false
+                    }
+                }, title: "Reset Progress?", description: "This will permanently erase all your stats and history. Are you sure?", isReset: true)
+                .padding(.horizontal, 8)
+            }
+                
+        }
+        .fullScreenCover(isPresented: $isShowAbout) {
+            AboutView()
         }
     }
 }
