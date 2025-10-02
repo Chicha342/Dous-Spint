@@ -90,7 +90,7 @@ struct TaskContainer: View {
 
 #Preview {
     TaskContainer(task: TaskItem(
-        id: UUID(),
+        id: 1,
         title: "Take a mindful walk for 5 minutes",
         description: "Walk slowly, paying attention to each step and your surroundings. Notice the sounds, smells, and sensations around you.",
         category: "Body",
@@ -104,7 +104,7 @@ struct TaskContainer: View {
 
 #Preview {
     TaskContainer(task: TaskItem(
-        id: UUID(),
+        id: 2,
         title: "Take a mindful walk for 5 minutes",
         description: "Walk slowly, paying attention to each step and your surroundings. Notice the sounds, smells, and sensations around you.",
         category: "Body",

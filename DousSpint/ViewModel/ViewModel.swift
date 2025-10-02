@@ -9,8 +9,27 @@ import SwiftUI
 
 class ViewModel: ObservableObject {
     @Published var allTasks: [TaskItem] = TaskItem.sampleTasks
-    @Published var spinResults: [SpinResult] = []
-    @Published var favorites: [UUID] = []
+    @Published var spinResults: [SpinResult] = [] {
+        didSet {
+            saveSpinResults()
+        }
+    }
+    
+    @Published var favorites: [Int] = [] {
+        didSet {
+            saveFavorites()
+        }
+    }
+    
+    init() {
+        if let savedTheme = UserDefaults.standard.string(forKey: "selectedTheme"),
+           let theme = AppTheme(rawValue: savedTheme) {
+            selectedTheme = theme
+        }
+        
+        loadSpinResults()
+        loadFavorites()
+    }
     
     @Published var selectedTheme: AppTheme = .system {
         didSet {
@@ -25,29 +44,24 @@ class ViewModel: ObservableObject {
     @Published var navigationPath = NavigationPath()
     @Published var showSettings = false
     
-    init() {
-        if let savedTheme = UserDefaults.standard.string(forKey: "selectedTheme"),
-           let theme = AppTheme(rawValue: savedTheme) {
-            selectedTheme = theme
-        }
-    }
-    
     func showError() {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            withAnimation {
+                self.mainError = true
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 withAnimation {
-                    self.mainError = true
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation {
-                        self.mainError = false
-                    }
+                    self.mainError = false
                 }
             }
         }
+    }
     
     @Published var isLoading: Bool = false
     @Published var mainError: Bool = false
+    
+    //MARK: - UI customColors
     
     var colorScheme: ColorScheme? {
         switch selectedTheme {
@@ -286,7 +300,7 @@ class ViewModel: ObservableObject {
             )
         }
     }
-     
+    
     func setCustomStrokeForSettingsButton() -> Color {
         switch self.selectedTheme{
         case .system:
@@ -310,15 +324,25 @@ enum AppTheme: String, CaseIterable {
     case dark = "Dark"
 }
 
+//MARK: - Data
 extension ViewModel {
     
     var myTasks: [TaskItem] {
         let activeTasks = spinResults
             .filter { $0.status == .new || $0.status == .inProgress }
             .sorted { $0.date > $1.date }
-            .prefix(3)
         
         return activeTasks.compactMap { result in
+            allTasks.first { $0.id == result.taskId }
+        }
+    }
+    
+    var completedTasks: [TaskItem] {
+        let completedResults = spinResults
+            .filter { $0.status == .completed }
+            .sorted { ($0.completedAt ?? $0.date) > ($1.completedAt ?? $1.date) }
+        
+        return completedResults.compactMap { result in
             allTasks.first { $0.id == result.taskId }
         }
     }
@@ -359,10 +383,45 @@ extension ViewModel {
         return randomTask
     }
     
-    func markTaskCompleted(taskId: UUID) {
+    func markTaskCompleted(taskId: Int) {
         if let index = spinResults.firstIndex(where: { $0.taskId == taskId }) {
             spinResults[index].status = .completed
             spinResults[index].completedAt = Date()
         }
+    }
+    
+    private func saveSpinResults() {
+        if let encoded = try? JSONEncoder().encode(spinResults) {
+            UserDefaults.standard.set(encoded, forKey: "spinResults")
+        }
+    }
+    
+    private func loadSpinResults() {
+        if let data = UserDefaults.standard.data(forKey: "spinResults"),
+           let decoded = try? JSONDecoder().decode([SpinResult].self, from: data) {
+            spinResults = decoded
+        }
+    }
+    
+    private func saveFavorites() {
+        UserDefaults.standard.set(favorites, forKey: "favorites")
+    }
+    
+    private func loadFavorites() {
+        if let favoritesArray = UserDefaults.standard.array(forKey: "favorites") as? [Int] {
+            favorites = favoritesArray
+        }
+    }
+    
+    func toggleFavorite(taskId: Int) {
+        if favorites.contains(taskId) {
+            favorites.removeAll { $0 == taskId }
+        } else {
+            favorites.append(taskId)
+        }
+    }
+    
+    func isFavorite(taskId: Int) -> Bool {
+        return favorites.contains(taskId)
     }
 }

@@ -59,15 +59,16 @@ struct SecondCustomButton: View {
     @EnvironmentObject var settings: ViewModel
     @Environment(\.colorScheme) var systemScheme
     
-    @State var isActive: Bool = false
+    
     
     let title: String
     let action: () -> Void
+    let isActive: Bool
     
     var body: some View {
         VStack{
             Button(action: {
-                isActive.toggle()
+                action()
             }){
                 Text(title)
                     .padding()
@@ -90,30 +91,9 @@ struct SecondCustomButton: View {
 #Preview {
     VStack(spacing: 10) {
         HStack{
-            SecondCustomButton(title: "All", action: {})
+            SecondCustomButton(title: "All", action: {}, isActive: false)
                 .environmentObject(ViewModel())
                 .colorScheme(.light)
-            
-            SecondCustomButton(title: "All", action: {})
-                .environmentObject(ViewModel())
-                .colorScheme(.light)
-            
-            SecondCustomButton(title: "All", action: {})
-                .environmentObject(ViewModel())
-                .colorScheme(.light)
-        }
-        HStack{
-            SecondCustomButton(title: "All", action: {})
-                .environmentObject(ViewModel())
-                .colorScheme(.dark)
-            
-            SecondCustomButton(title: "All", action: {})
-                .environmentObject(ViewModel())
-                .colorScheme(.dark)
-            
-            SecondCustomButton(title: "All", action: {})
-                .environmentObject(ViewModel())
-                .colorScheme(.dark)
         }
     }
     .padding()

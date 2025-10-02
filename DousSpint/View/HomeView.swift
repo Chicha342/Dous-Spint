@@ -18,14 +18,38 @@ struct HomeView: View {
     @State private var showTaskDetail = false
     @State private var selectedTask: TaskItem? = nil
     
-    let categories: [CategoryButton] = [
-        CategoryButton(title: "All", action: { print("All tapped") }),
-        CategoryButton(title: "Body", action: { print("Body tapped") }),
-        CategoryButton(title: "Mind", action: { print("Mind tapped") }),
-        CategoryButton(title: "Soul", action: { print("Soul tapped") }),
-        CategoryButton(title: "Connect", action: { print("Connect tapped") }),
-        CategoryButton(title: "Create", action: { print("Create tapped") })
-    ]
+    @State private var selectedCategory: String = "All"
+    
+    private var categories: [CategoryButton] {
+        [
+            CategoryButton(title: "All", action: {
+                selectedCategory = "All"
+            }),
+            CategoryButton(title: "Body", action: {
+                selectedCategory = "Body"
+            }),
+            CategoryButton(title: "Mind", action: {
+                selectedCategory = "Mind"
+            }),
+            CategoryButton(title: "Soul", action: {
+                selectedCategory = "Soul"
+            }),
+            CategoryButton(title: "Connect", action: {
+                selectedCategory = "Connect"
+            }),
+            CategoryButton(title: "Create", action: {
+                selectedCategory = "Create"
+            })
+        ]
+    }
+    
+    private var filteredTasks: [TaskItem] {
+        if selectedCategory == "All" {
+            return settings.myTasks
+        } else {
+            return settings.myTasks.filter { $0.category == selectedCategory }
+        }
+    }
     
     var body: some View {
         ZStack{
@@ -67,26 +91,31 @@ struct HomeView: View {
                     
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 3), spacing: 6) {
                         ForEach(categories, id: \.title) { item in
-                            SecondCustomButton(title: item.title, action: item.action)
+                            SecondCustomButton(title: item.title,
+                                               action: item.action,
+                                               isActive: selectedCategory == item.title)
                         }
                     }
                     .padding(.horizontal)
                     
                     Spacer()
-                    if !settings.myTasks.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
+                    if !filteredTasks.isEmpty {
                             LazyVStack(spacing: 12) {
-                                ForEach(settings.myTasks) { task in
+                                ForEach(filteredTasks) { task in
                                     TaskContainer(task: task, onTap: {
                                         selectedTask = task
-                                        showTaskDetail = true
                                     })
                                     .frame(maxWidth: .infinity)
                                 }
                             }
-                        }
                         .padding(.horizontal)
                         .padding(.top)
+                    } else {
+                        Text("No tasks in '\(selectedCategory)' category")
+                            .font(.calistoga(size: 18))
+                            .foregroundColor(settings.mainTextColor.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                            .padding(.top)
                     }
                     
                     //Vstack end
