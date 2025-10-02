@@ -78,7 +78,8 @@ struct HomeView: View {
                         
                         showTutorial = false
                         spinWheel()
-                    }, width: 171, height: 56)
+                    }, height: 56)
+                    .padding(.horizontal, 120)
                     .opacity(
                         settings.isLoading || settings.mainError ? 0.5 : 1
                     )
@@ -100,14 +101,16 @@ struct HomeView: View {
                     
                     Spacer()
                     if !filteredTasks.isEmpty {
-                            LazyVStack(spacing: 12) {
-                                ForEach(filteredTasks) { task in
-                                    TaskContainer(task: task, onTap: {
-                                        selectedTask = task
-                                    })
-                                    .frame(maxWidth: .infinity)
-                                }
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredTasks) { task in
+                                TaskContainer(task: task, secondatyButtonAction: {
+                                    selectedTask = task
+                                }, primaryButtonAction: {
+                                    selectedTask = task
+                                })
+                                .frame(maxWidth: .infinity)
                             }
+                        }
                         .padding(.horizontal)
                         .padding(.top)
                     } else {
@@ -122,6 +125,17 @@ struct HomeView: View {
                 }
             }
             
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { selectedTask != nil },
+            set: { if !$0 { selectedTask = nil } }
+        )) {
+            if let task = selectedTask {
+                TaskDetails(task: task)
+                    .environmentObject(settings)
+            } else {
+                Color.clear
+            }
         }
         .overlay(content: {
             if showTutorial {

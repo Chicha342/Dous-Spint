@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TaskContainer: View {
     let task: TaskItem
-    let onTap: () -> Void
+    let secondatyButtonAction: () -> Void
+    let primaryButtonAction: () -> Void
     
     @Environment(\.colorScheme) var systemScheme
     
@@ -71,9 +72,13 @@ struct TaskContainer: View {
             
             HStack{
                 
-                DetailsCustomButton(title: "Details", action: { }, with: 135, height: 44)
+                DetailsCustomButton(title: "Details", action: {
+                    secondatyButtonAction()
+                }, with: 135, height: 44)
                 
-                MainCustomButton(title: "Start", action: { }, width: 135, height: 44)
+                MainCustomButton(title: "Start", action: {
+                    primaryButtonAction()
+                }, height: 44)
             }
         }
         .padding()
@@ -97,7 +102,7 @@ struct TaskContainer: View {
         difficulty: "Easy",
         estimatedTime: 5,
         tags: ["mindfulness", "movement", "outdoor"]
-    ), onTap: {})
+    ), secondatyButtonAction: { }, primaryButtonAction: { })
     .environmentObject(ViewModel())
 }
 
@@ -111,7 +116,7 @@ struct TaskContainer: View {
         difficulty: "Easy",
         estimatedTime: 5,
         tags: ["mindfulness", "movement", "outdoor"]
-    ), onTap: {})
+    ), secondatyButtonAction: { }, primaryButtonAction: { })
     .environmentObject(ViewModel())
     .colorScheme(.dark)
 }

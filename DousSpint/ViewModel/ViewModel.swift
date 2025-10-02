@@ -63,11 +63,44 @@ class ViewModel: ObservableObject {
     
     //MARK: - UI customColors
     
+    
     var colorScheme: ColorScheme? {
         switch selectedTheme {
         case .light: return .light
         case .dark: return .dark
         case .system: return nil
+        }
+    }
+    
+    
+    var headerTextColor: Color {
+        switch self.selectedTheme {
+        case .light:
+            return .init(r: 255, g: 123, b: 0)
+        case .dark:
+            return .init(r: 255, g: 235, b: 192)
+        case .system:
+            return Color(UIColor { trait in
+                trait.userInterfaceStyle == .dark ?
+                UIColor(Color(r: 255, g: 235, b: 192)) :
+                UIColor(Color(r: 255, g: 123, b: 0))
+            })
+        }
+    }
+    
+    
+    var skipButtonColor: Color {
+        switch self.selectedTheme {
+        case .light:
+            return .init(r: 212, g: 84, b: 255)
+        case .dark:
+            return .init(r: 203, g: 37, b: 247)
+        case .system:
+            return Color(UIColor { trait in
+                trait.userInterfaceStyle == .dark ?
+                UIColor(Color(r: 203, g: 37, b: 247)) :
+                UIColor(Color(r: 212, g: 84, b: 255))
+            })
         }
     }
     
@@ -425,3 +458,4 @@ extension ViewModel {
         return favorites.contains(taskId)
     }
 }
+

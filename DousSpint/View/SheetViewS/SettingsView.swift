@@ -39,7 +39,7 @@ struct SettingsView: View {
                     
                     Text("Settings")
                         .font(.calistoga(size: 24))
-                        .foregroundColor(viewModel.mainTextColor)
+                        .foregroundColor(viewModel.headerTextColor)
                     
                     Spacer()
                 }

@@ -29,7 +29,7 @@ struct AboutView: View {
                         
                         Text("About Dous Spint")
                             .font(.calistoga(size: 24))
-                            .foregroundColor(viewModel.mainTextColor)
+                            .foregroundColor(viewModel.headerTextColor)
                         
                         Spacer()
                     }

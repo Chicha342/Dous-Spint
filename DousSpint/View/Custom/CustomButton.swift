@@ -10,8 +10,7 @@ import SwiftUI
 struct MainCustomButton: View {
     let title: String
     let action: () -> Void
-    
-    let width: Int?
+
     let height: Int?
     
     var body: some View {
@@ -21,7 +20,7 @@ struct MainCustomButton: View {
                 .font(.calistoga(size: 20))
                 .shadow(radius: 0, x: 0, y: 2)
                 .foregroundColor(.init(r: 255, g: 235, b: 192))
-                .frame(width: CGFloat(width ?? 358), height: CGFloat(height ?? 56))
+                .frame(maxWidth: .infinity, maxHeight: CGFloat(height ?? 56))
                 .background{
                     LinearGradient(colors:
                                     [Color.init(r: 245, g: 117, b: 127),
@@ -50,7 +49,7 @@ struct MainCustomButton: View {
 
 #Preview {
     VStack(spacing: 0) {
-        MainCustomButton(title: "Next", action: {}, width: 300, height: 100)
+        MainCustomButton(title: "Next", action: {}, height: 10)
     }
     .padding()
 }
@@ -261,3 +260,37 @@ struct CancelButton: View {
     CancelButton(title: "Export History", action: { })
         .environmentObject(ViewModel())
 }
+
+
+struct SkipCuptomButton: View {
+    let title: String
+    let action: () -> Void
+    @Environment(\.colorScheme) var systemScheme
+    @EnvironmentObject var settings: ViewModel
+    
+    var body: some View {
+        VStack{
+            Button(action: {
+                action()
+            }, label: {
+                Text(title)
+                    .font(.calistoga(size: 20))
+                    .foregroundStyle(settings.skipButtonColor)
+                    .padding()
+                    .cornerRadius(60)
+                    .frame(maxWidth: .infinity, maxHeight: 56)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 60)
+                            .stroke(settings.skipButtonColor, lineWidth: 3)
+                    }
+            })
+        }
+    }
+}
+
+#Preview(body: {
+    SkipCuptomButton(title: "Skip", action: {
+        
+    })
+    .environmentObject(ViewModel())
+})
