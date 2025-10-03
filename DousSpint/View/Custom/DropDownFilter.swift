@@ -156,33 +156,3 @@ struct RoundedCorner: Shape {
         return Path(path.cgPath)
     }
 }
-
-//Удалить
-#Preview {
-    StatefulPreviewWrapper("All") { binding in
-        DropdownFilter(
-            title: "Category",
-            options: ["All", "Body", "Mind", "Soul", "Connect", "Create"],
-            selection: binding
-        )
-        .padding()
-        .background {
-            Color.black.opacity(0.1)
-        }
-    }
-    .environmentObject(ViewModel())
-}
-
-struct StatefulPreviewWrapper<Value>: View {
-    @State private var value: Value
-    private let content: (Binding<Value>) -> AnyView
-    
-    init(_ initialValue: Value, @ViewBuilder content: @escaping (Binding<Value>) -> some View) {
-        _value = State(initialValue: initialValue)
-        self.content = { AnyView(content($0)) }
-    }
-    
-    var body: some View {
-        content($value)
-    }
-}

@@ -154,6 +154,7 @@ extension ViewModel {
         UserDefaults.standard.set(favorites, forKey: "favorites")
     }
     
+    
     private func loadFavorites() {
         if let favoritesArray = UserDefaults.standard.array(forKey: "favorites") as? [Int] {
             favorites = favoritesArray

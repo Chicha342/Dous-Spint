@@ -69,10 +69,11 @@ struct TaskRun: View {
                             .foregroundColor(viewModel.buttonTextColor)
                         
                         TimeContainer(timeStr: formatTime(timeRemaining))
+                            .padding(.bottom)
                         
                         Spacer()
                         
-                        VStack(spacing: 20){
+                        VStack(spacing: 12){
                             SkipCuptomButton(title: "Skip", action: {
                                 stopTimer()
                                 taskStatus = .skipped
@@ -85,11 +86,9 @@ struct TaskRun: View {
                                 completeTask()
                             }, height: 56)
                         }
-                        .padding(.bottom)
+                        .padding(.bottom, 25)
                         
                     }
-                    
-                    
                     .padding(.horizontal)
                     
                 }

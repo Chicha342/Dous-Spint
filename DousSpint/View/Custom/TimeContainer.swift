@@ -22,8 +22,12 @@ struct TimeContainer: View {
                 .padding()
                 .frame(maxWidth: .infinity)
                 .frame(height: 249)
-                .background(customBgColor())
-                .cornerRadius(50)
+                .background{
+                    customImage(for: systemScheme)
+                        .resizable()
+                        .frame(width: 358, height: 260)
+                        
+                }
                 .padding(.horizontal)
         }
     }
@@ -43,28 +47,16 @@ struct TimeContainer: View {
         }
     }
     
-    private func customBgColor() -> LinearGradient {
+    private func customImage(for colorScheme: ColorScheme) -> Image {
         switch settings.selectedTheme {
         case .system:
-            return systemScheme == .dark
-            ? LinearGradient(colors: [
-                Color(r: 77, g: 1, b: 87),
-                Color(r: 102, g: 12, b: 62)
-            ], startPoint: .top, endPoint: .bottom)
-            : LinearGradient(colors: [
-                Color(r: 254, g: 245, b: 255),
-                Color(r: 255, g: 234, b: 246)
-            ], startPoint: .top, endPoint: .bottom)
+            return colorScheme == .dark ?
+            Image("cardTimeDark") :
+            Image("cardTimeLight")
         case .light:
-            return LinearGradient(colors: [
-                Color(r: 254, g: 245, b: 255),
-                Color(r: 255, g: 234, b: 246)
-            ], startPoint: .top, endPoint: .bottom)
+            return Image("cardTimeLight")
         case .dark:
-            return LinearGradient(colors: [
-                Color(r: 77, g: 1, b: 87),
-                Color(r: 102, g: 12, b: 62)
-            ], startPoint: .top, endPoint: .bottom)
+            return Image("cardTimeDark")
         }
     }
 }

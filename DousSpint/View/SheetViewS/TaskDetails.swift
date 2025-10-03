@@ -38,7 +38,7 @@ struct TaskDetails: View {
                     
                     Spacer()
                     Button(action: {
-                        
+                        viewModel.toggleFavorite(taskId: task.id) 
                     }, label: {
                         Image("star")
                             .resizable()

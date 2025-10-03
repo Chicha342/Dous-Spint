@@ -88,7 +88,7 @@ struct CompletedTask: View {
                         }, height: 56)
                     }
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 5)
+                    .padding(.bottom, 15)
                 }
             }
         }

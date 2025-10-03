@@ -75,17 +75,21 @@ struct HistoryDetails: View {
                         .lineLimit(1)
                 }
                 .padding(.top)
+                .padding(.horizontal)
                 
                 ScrollView{
-                    VStack(alignment: .leading){
+                    VStack(alignment: .leading, spacing: 12){
                         Text(task.title)
                             .font(.calistoga(size: 34))
                             .foregroundColor(settings.buttonTextColor)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
                         
                         Text(formatDate(result.completedAt ?? result.date))
                             .font(.poppins(.medium, size: 16))
                             .foregroundColor(buttonTextColor)
-                            .padding(.top, -15)
                         
                         HStack(spacing: 4){
                             if paddingStatus == 0 {
@@ -103,6 +107,7 @@ struct HistoryDetails: View {
                         Spacer()
                     }
                 }
+                .padding(.horizontal)
             }
         }
         
@@ -136,17 +141,17 @@ struct HistoryDetails: View {
 
 #Preview {
     HistoryDetails(result: SpinResult(id: UUID(),
-                                        taskId: 5,
-                                        date: Date(),
-                                        status: .completed), task: TaskItem(
-                                            id: 4,
-                                            title: "Hold a plank and repeat an affirmation: 'I am strong'",
-                                            description: "Maintain plank position while repeating the affirmation with each breath.",
-                                            category: "Body",
-                                            difficulty: "Medium",
-                                            estimatedTime: 1,
-                                            tags: ["core", "affirmation", "mind-body"]
-                                        ))
+                                      taskId: 5,
+                                      date: Date(),
+                                      status: .completed), task: TaskItem(
+                                        id: 4,
+                                        title: "Hold a plank and repeat an affirmation: 'I am strong'",
+                                        description: "Maintain plank position while repeating the affirmation with each breath.",
+                                        category: "Body",
+                                        difficulty: "Medium",
+                                        estimatedTime: 1,
+                                        tags: ["core", "affirmation", "mind-body"]
+                                      ))
     .environmentObject(ViewModel())
     
 }

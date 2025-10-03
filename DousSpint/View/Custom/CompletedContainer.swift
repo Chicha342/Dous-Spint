@@ -58,13 +58,30 @@ struct CompletedContainer: View {
             .padding()
             .frame(maxWidth: .infinity)
             .frame(height: 200)
-            .background(customBgColor())
-            .cornerRadius(50)
+            .background{
+                customImage(for: systemScheme)
+                    .resizable()
+                    .frame(width: 276, height: 200)
+            }
             .padding(.horizontal)
             
             
         }
     }
+    
+    private func customImage(for colorScheme: ColorScheme) -> Image {
+        switch settings.selectedTheme {
+        case .system:
+            return colorScheme == .dark ?
+            Image("completedCardDark") :
+            Image("completedCardLight")
+        case .light:
+            return Image("completedCardLight")
+        case .dark:
+            return Image("completedCardDark")
+        }
+    }
+
     
     private func formatTimeSpent(_ timeInterval: TimeInterval?) -> String {
         guard let time = timeInterval else { return "N/A" }
