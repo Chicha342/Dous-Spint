@@ -46,7 +46,9 @@ struct TaskDetails: View {
                     })
                     
                 }
+                .padding(.top)
                 .padding(.horizontal)
+                
                 ScrollView{
                     VStack(alignment: .leading){
                         

@@ -12,8 +12,13 @@ struct TaskRun: View {
     @Environment(\.colorScheme) var systemScheme
     @Environment(\.dismiss) var dismiss
     
+    @State private var showCompletedScreen = false
+    @State private var taskStatus: SpinResult.Status = .completed
+    
     @State var timeRemaining: Int
     @State var timer: Timer? = nil
+    @State private var startTime = Date()
+    @State private var isTimerRunning = false
     
     init(task: TaskItem) {
         self.task = task
@@ -46,47 +51,71 @@ struct TaskRun: View {
                         
                     }
                     .padding(.horizontal)
-                        VStack(alignment: .leading){
-                            //Task
-                            Text("TASK")
-                                .font(.poppins(.medium, size: 12))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(viewModel.themeBackgroundContainers(for: systemScheme))
-                                .cornerRadius(5)
-                                .foregroundColor(viewModel.buttonTextColor)
-                                .padding(.top)
+                    .padding(.top)
+                    
+                    VStack(alignment: .leading){
+                        //Task
+                        Text("TASK")
+                            .font(.poppins(.medium, size: 12))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(viewModel.themeBackgroundContainers(for: systemScheme))
+                            .cornerRadius(5)
+                            .foregroundColor(viewModel.buttonTextColor)
+                            .padding(.top)
+                        
+                        Text(task.title)
+                            .font(.calistoga(size: 34))
+                            .foregroundColor(viewModel.buttonTextColor)
+                        
+                        TimeContainer(timeStr: formatTime(timeRemaining))
+                        
+                        Spacer()
+                        
+                        VStack(spacing: 20){
+                            SkipCuptomButton(title: "Skip", action: {
+                                stopTimer()
+                                taskStatus = .skipped
+                                completeTask()
+                            })
                             
-                            Text(task.title)
-                                .font(.calistoga(size: 34))
-                                .foregroundColor(viewModel.buttonTextColor)
-                            
-                            TimeContainer(timeStr: formatTime(timeRemaining))
-                                .onAppear {
-                                    startCountdown()
-                                }
-                            
-                            Spacer()
-                            
-                            VStack(spacing: 20){
-                                SkipCuptomButton(title: "Skip", action: {
-                                    
-                                })
-                                
-                                MainCustomButton(title: "Done", action: {
-                                    
-                                }, height: 56)
-                            }
-                            .padding(.bottom)
-                            
+                            MainCustomButton(title: "Done", action: {
+                                stopTimer()
+                                taskStatus = .completed
+                                completeTask()
+                            }, height: 56)
                         }
+                        .padding(.bottom)
                         
-                        
-                        .padding(.horizontal)
+                    }
+                    
+                    
+                    .padding(.horizontal)
                     
                 }
             }
         }
+        .fullScreenCover(isPresented: $showCompletedScreen) {
+            CompletedTask(task: task, status: taskStatus, timeSpent: calculateTimeSpent())
+                .environmentObject(viewModel)
+        }
+        .onAppear {
+            startTime = Date()
+            startCountdown()
+        }
+        .onDisappear {
+            stopTimer()
+        }
+    }
+    
+    private func calculateTimeSpent() -> TimeInterval {
+        return Date().timeIntervalSince(startTime)
+    }
+    
+    private func completeTask() {
+        stopTimer()
+        viewModel.markTaskCompleted(taskId: task.id, status: taskStatus)
+        showCompletedScreen = true
     }
     
     func formatTime(_ seconds: Int) -> String {
@@ -96,12 +125,14 @@ struct TaskRun: View {
     }
     
     func startCountdown() {
+        guard !isTimerRunning else { return }
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             if timeRemaining > 0 {
                 timeRemaining -= 1
             } else {
                 stopTimer()
-                //Добавить действие при за
+                taskStatus = .skipped
             }
         }
     }
@@ -109,6 +140,7 @@ struct TaskRun: View {
     func stopTimer() {
         timer?.invalidate()
         timer = nil
+        isTimerRunning = false
     }
 }
 

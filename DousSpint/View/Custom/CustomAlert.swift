@@ -19,36 +19,42 @@ struct CustomAlert: View {
     let isReset: Bool
     
     var body: some View {
-        VStack(spacing: 0){
-            Text(title)
-                .foregroundStyle(viewModel.buttonTextColor)
-                .font(.poppins(.medium, size: 24))
-            
-            Text(description)
-                .font(.poppins(.medium, size: 16))
-                .foregroundStyle(viewModel.buttonTextColor)
-                .multilineTextAlignment(.center)
-                .padding(.top, 13)
-            
-            HStack{
-                CancelButton(title: "Cancel", action: {actionSecondaryButton() })
+        VStack{
+            VStack(spacing: 0){
+                Text(title)
+                    .foregroundStyle(viewModel.buttonTextColor)
+                    .font(.poppins(.medium, size: 24))
                 
-                if isReset{
-                    ResetButton(title: "Reset", action: {actionPrimaryButton() })
-                }else{
-                    ExportButton(title: "Export", action: {actionPrimaryButton() })
+                Text(description)
+                    .font(.poppins(.medium, size: 16))
+                    .foregroundStyle(viewModel.buttonTextColor)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 13)
+                
+                HStack{
+                    CancelButton(title: "Cancel", action: {
+                        actionSecondaryButton()
+                    })
+                    
+                    if isReset{
+                        ResetButton(title: "Reset", action: {
+                            actionPrimaryButton()
+                        })
+                    }else{
+                        ExportButton(title: "Export", action: {actionPrimaryButton() })
+                    }
                 }
+                .padding(.horizontal)
+                .padding(.top, 32)
             }
-            .padding(.horizontal)
-            .padding(.top, 32)
-        }
-        .padding()
-        .background(customBgColor(for: systemScheme))
-        .cornerRadius(24)
-        .overlay {
-            RoundedRectangle(cornerRadius: 24)
-                .stroke(style: StrokeStyle(lineWidth: 1))
-                .foregroundColor(setCustomStrokeForSettingsButton())
+            .padding()
+            .background(customBgColor(for: systemScheme))
+            .cornerRadius(24)
+            .overlay {
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(style: StrokeStyle(lineWidth: 1))
+                    .foregroundColor(setCustomStrokeForSettingsButton())
+            }
         }
     }
     

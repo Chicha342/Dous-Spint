@@ -33,6 +33,7 @@ struct AboutView: View {
                         
                         Spacer()
                     }
+                    .padding(.top)
                     .padding(.leading)
                     Spacer()
                 }

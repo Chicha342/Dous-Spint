@@ -112,13 +112,13 @@ struct HomeView: View {
                             }
                         }
                         .padding(.horizontal)
-                        .padding(.top)
+                        .padding(.vertical)
                     } else {
                         Text("No tasks in '\(selectedCategory)' category")
-                            .font(.calistoga(size: 18))
-                            .foregroundColor(settings.mainTextColor.opacity(0.7))
+                            .font(.calistoga(size: 14))
+                            .foregroundColor(settings.buttonTextColor.opacity(0.8))
                             .multilineTextAlignment(.center)
-                            .padding(.top)
+                            .padding(.top, 10)
                     }
                     
                     //Vstack end
@@ -126,6 +126,7 @@ struct HomeView: View {
             }
             
         }
+        .animation(.easeInOut(duration: 0.35), value: selectedCategory)
         .fullScreenCover(isPresented: Binding(
             get: { selectedTask != nil },
             set: { if !$0 { selectedTask = nil } }
@@ -178,6 +179,9 @@ struct HomeView: View {
         })
         .onAppear{
             handleFirstLaunch()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .closeAllSheets)) { _ in
+            selectedTask = nil
         }
         
     }

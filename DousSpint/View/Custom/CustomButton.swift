@@ -47,9 +47,39 @@ struct MainCustomButton: View {
     }
 }
 
+struct SecondMainButton: View {
+    let title: String
+    let action: () -> Void
+
+    let height: Int?
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .padding()
+                .font(.calistoga(size: 20))
+                .shadow(radius: 0, x: 0, y: 2)
+                .foregroundColor(.init(r: 234, g: 180, b: 248))
+                .frame(maxWidth: .infinity, maxHeight: CGFloat(height ?? 56))
+                .background{
+                    LinearGradient(colors:
+                                    [Color.init(r: 46, g: 15, b: 105),
+                                     Color.init(r: 104, g: 11, b: 120)],
+                                   startPoint: .top,
+                                   endPoint: .bottom)
+                }
+                .cornerRadius(60)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 60)
+                        .stroke(Color.init(r: 64, g: 20, b: 131), lineWidth: 4)
+                }
+        }
+    }
+}
+
 #Preview {
     VStack(spacing: 0) {
-        MainCustomButton(title: "Next", action: {}, height: 10)
+        SecondMainButton(title: "Second", action: {}, height: 56)
     }
     .padding()
 }
@@ -57,8 +87,6 @@ struct MainCustomButton: View {
 struct SecondCustomButton: View {
     @EnvironmentObject var settings: ViewModel
     @Environment(\.colorScheme) var systemScheme
-    
-    
     
     let title: String
     let action: () -> Void

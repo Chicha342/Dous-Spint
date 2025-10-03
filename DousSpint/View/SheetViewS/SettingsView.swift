@@ -43,6 +43,7 @@ struct SettingsView: View {
                     
                     Spacer()
                 }
+                .padding(.top)
                 .padding(.leading)
                 
                 ScrollView{
@@ -245,7 +246,7 @@ struct SettingsView: View {
                             
                         })
                         .padding(.top, 56)
-                        .padding(.horizontal, 10)
+                        .padding(.trailing)
                         
                         Spacer()
                     }
@@ -253,29 +254,48 @@ struct SettingsView: View {
                 }
             }
             
-            if isExportData{
-                CustomAlert(actionPrimaryButton: {
-                    
-                }, actionSecondaryButton: {
-                    withAnimation {
-                        isExportData = false
-                    }
-                }, title: " Export History?", description: "Your history will be saved as a CSV file. Proceed with export?", isReset: false)
+            if isExportData {
+                CustomAlert(
+                    actionPrimaryButton: {
+                        
+                    },
+                    actionSecondaryButton: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            isExportData = false
+                        }
+                    },
+                    title: "Export History?",
+                    description: "Your history will be saved as a CSV file. Proceed with export?",
+                    isReset: false
+                )
+                .transition(.opacity)
+                .zIndex(1)
                 .padding(.horizontal, 8)
             }
             
-            if resetProgress{
-                CustomAlert(actionPrimaryButton: {
-                    
-                }, actionSecondaryButton: {
-                    withAnimation {
-                        resetProgress = false
-                    }
-                }, title: "Reset Progress?", description: "This will permanently erase all your stats and history. Are you sure?", isReset: true)
+            if resetProgress {
+                CustomAlert(
+                    actionPrimaryButton: {
+                        
+                    },
+                    actionSecondaryButton: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            resetProgress = false
+                        }
+                    },
+                    title: "Reset Progress?",
+                    description: "This will permanently erase all your stats and history. Are you sure?",
+                    isReset: true
+                )
+                .transition(.opacity)
+                .zIndex(1)
                 .padding(.horizontal, 8)
             }
-                
+            
         }
+        .animation(.easeInOut(duration: 0.3), value: isExportData)
+        .animation(.easeInOut(duration: 0.3), value: resetProgress)
+        
         .fullScreenCover(isPresented: $isShowAbout) {
             AboutView()
         }

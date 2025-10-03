@@ -61,9 +61,127 @@ class ViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var mainError: Bool = false
     
-    //MARK: - UI customColors
+}
+
+enum AppTheme: String, CaseIterable {
+    case system = "System"
+    case light = "Light"
+    case dark = "Dark"
+}
+
+//MARK: - Data
+extension ViewModel {
     
+    var myTasks: [TaskItem] {
+        let activeTasks = spinResults
+            .filter { $0.status == .new || $0.status == .inProgress }
+            .sorted { $0.date > $1.date }
+        
+        return activeTasks.compactMap { result in
+            allTasks.first { $0.id == result.taskId }
+        }
+    }
     
+    var completedTasks: [TaskItem] {
+        let completedResults = spinResults
+            .filter { $0.status == .completed }
+            .sorted { ($0.completedAt ?? $0.date) > ($1.completedAt ?? $1.date) }
+        
+        return completedResults.compactMap { result in
+            allTasks.first { $0.id == result.taskId }
+        }
+    }
+    
+    var currentTask: TaskItem? {
+        guard let latestSpin = spinResults
+            .filter({ $0.status == .new || $0.status == .inProgress })
+            .sorted(by: { $0.date > $1.date })
+            .first else { return nil }
+        
+        return allTasks.first { $0.id == latestSpin.taskId }
+    }
+    
+    var spinsLeftToday: Int {
+        let todaySpins = spinResults.filter {
+            Calendar.current.isDateInToday($0.date)
+        }.count
+        return max(0, 3 - todaySpins)
+    }
+    
+    func spinWheel() -> TaskItem? {
+        guard spinsLeftToday > 0 else { return nil }
+        
+        let availableTasks = allTasks.filter { task in
+            !spinResults.contains { $0.taskId == task.id && $0.status == .completed }
+        }
+        
+        guard let randomTask = availableTasks.randomElement() else { return nil }
+        
+        let spinResult = SpinResult(
+            id: UUID(),
+            taskId: randomTask.id,
+            date: Date(),
+            status: .new
+        )
+        spinResults.append(spinResult)
+        
+        return randomTask
+    }
+    
+    func markTaskCompleted(taskId: Int, status: SpinResult.Status = .completed) {
+        if let index = spinResults.firstIndex(where: { $0.taskId == taskId }) {
+            spinResults[index].status = status
+            if status == .completed {
+                spinResults[index].completedAt = Date()
+            }
+        }
+    }
+    
+    private func saveSpinResults() {
+        if let encoded = try? JSONEncoder().encode(spinResults) {
+            UserDefaults.standard.set(encoded, forKey: "spinResults")
+        }
+    }
+    
+    private func loadSpinResults() {
+        if let data = UserDefaults.standard.data(forKey: "spinResults"),
+           let decoded = try? JSONDecoder().decode([SpinResult].self, from: data) {
+            spinResults = decoded
+        }
+    }
+    
+    private func saveFavorites() {
+        UserDefaults.standard.set(favorites, forKey: "favorites")
+    }
+    
+    private func loadFavorites() {
+        if let favoritesArray = UserDefaults.standard.array(forKey: "favorites") as? [Int] {
+            favorites = favoritesArray
+        }
+    }
+    
+    func toggleFavorite(taskId: Int) {
+        if favorites.contains(taskId) {
+            favorites.removeAll { $0 == taskId }
+        } else {
+            favorites.append(taskId)
+        }
+    }
+    
+    func isFavorite(taskId: Int) -> Bool {
+        return favorites.contains(taskId)
+    }
+    
+    var historyResults: [SpinResult] {
+        return spinResults
+            .filter { $0.status == .completed || $0.status == .skipped }
+            .sorted { ($0.completedAt ?? $0.date) > ($1.completedAt ?? $1.date) }
+    }
+}
+
+
+//MARK: - UI customColors
+extension ViewModel {
     var colorScheme: ColorScheme? {
         switch selectedTheme {
         case .light: return .light
@@ -71,7 +189,6 @@ class ViewModel: ObservableObject {
         case .system: return nil
         }
     }
-    
     
     var headerTextColor: Color {
         switch self.selectedTheme {
@@ -87,7 +204,6 @@ class ViewModel: ObservableObject {
             })
         }
     }
-    
     
     var skipButtonColor: Color {
         switch self.selectedTheme {
@@ -306,7 +422,6 @@ class ViewModel: ObservableObject {
         }
     }
     
-    
     func customSettingsButtonBGcolor(for systemScheme: ColorScheme) -> LinearGradient {
         switch self.selectedTheme {
         case .light:
@@ -348,114 +463,8 @@ class ViewModel: ObservableObject {
             return Color.init(r: 64, g: 20, b: 131)
         }
     }
-    
 }
 
-enum AppTheme: String, CaseIterable {
-    case system = "System"
-    case light = "Light"
-    case dark = "Dark"
+extension Notification.Name {
+    static let closeAllSheets = Notification.Name("closeAllSheets")
 }
-
-//MARK: - Data
-extension ViewModel {
-    
-    var myTasks: [TaskItem] {
-        let activeTasks = spinResults
-            .filter { $0.status == .new || $0.status == .inProgress }
-            .sorted { $0.date > $1.date }
-        
-        return activeTasks.compactMap { result in
-            allTasks.first { $0.id == result.taskId }
-        }
-    }
-    
-    var completedTasks: [TaskItem] {
-        let completedResults = spinResults
-            .filter { $0.status == .completed }
-            .sorted { ($0.completedAt ?? $0.date) > ($1.completedAt ?? $1.date) }
-        
-        return completedResults.compactMap { result in
-            allTasks.first { $0.id == result.taskId }
-        }
-    }
-    
-    var currentTask: TaskItem? {
-        guard let latestSpin = spinResults
-            .filter({ $0.status == .new || $0.status == .inProgress })
-            .sorted(by: { $0.date > $1.date })
-            .first else { return nil }
-        
-        return allTasks.first { $0.id == latestSpin.taskId }
-    }
-    
-    var spinsLeftToday: Int {
-        let todaySpins = spinResults.filter {
-            Calendar.current.isDateInToday($0.date)
-        }.count
-        return max(0, 3 - todaySpins)
-    }
-    
-    func spinWheel() -> TaskItem? {
-        guard spinsLeftToday > 0 else { return nil }
-        
-        let availableTasks = allTasks.filter { task in
-            !spinResults.contains { $0.taskId == task.id && $0.status == .completed }
-        }
-        
-        guard let randomTask = availableTasks.randomElement() else { return nil }
-        
-        let spinResult = SpinResult(
-            id: UUID(),
-            taskId: randomTask.id,
-            date: Date(),
-            status: .new
-        )
-        spinResults.append(spinResult)
-        
-        return randomTask
-    }
-    
-    func markTaskCompleted(taskId: Int) {
-        if let index = spinResults.firstIndex(where: { $0.taskId == taskId }) {
-            spinResults[index].status = .completed
-            spinResults[index].completedAt = Date()
-        }
-    }
-    
-    private func saveSpinResults() {
-        if let encoded = try? JSONEncoder().encode(spinResults) {
-            UserDefaults.standard.set(encoded, forKey: "spinResults")
-        }
-    }
-    
-    private func loadSpinResults() {
-        if let data = UserDefaults.standard.data(forKey: "spinResults"),
-           let decoded = try? JSONDecoder().decode([SpinResult].self, from: data) {
-            spinResults = decoded
-        }
-    }
-    
-    private func saveFavorites() {
-        UserDefaults.standard.set(favorites, forKey: "favorites")
-    }
-    
-    private func loadFavorites() {
-        if let favoritesArray = UserDefaults.standard.array(forKey: "favorites") as? [Int] {
-            favorites = favoritesArray
-        }
-    }
-    
-    func toggleFavorite(taskId: Int) {
-        if favorites.contains(taskId) {
-            favorites.removeAll { $0 == taskId }
-        } else {
-            favorites.append(taskId)
-        }
-    }
-    
-    func isFavorite(taskId: Int) -> Bool {
-        return favorites.contains(taskId)
-    }
-}
-
