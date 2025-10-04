@@ -10,7 +10,7 @@ import SwiftUI
 struct MainCustomButton: View {
     let title: String
     let action: () -> Void
-
+    
     let height: Int?
     
     var body: some View {
@@ -50,7 +50,7 @@ struct MainCustomButton: View {
 struct SecondMainButton: View {
     let title: String
     let action: () -> Void
-
+    
     let height: Int?
     
     var body: some View {
@@ -322,3 +322,71 @@ struct SkipCuptomButton: View {
     })
     .environmentObject(ViewModel())
 })
+
+
+struct DifficultyButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    @EnvironmentObject var settings: ViewModel
+    @Environment(\.colorScheme) var systemScheme
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.poppins(.regular, size: 16))
+                .foregroundColor(isSelected ? .white : Color(red: 185/255, green: 185/255, blue: 185/255))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(
+                    ZStack {
+                        LinearGradient(
+                            colors: [Color.clear, Color.clear],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        
+                        customBg()
+                            .opacity(isSelected ? 1 : 0)
+                    }
+                )
+                .cornerRadius(8)
+        }
+        .animation(.easeInOut(duration: 0.3), value: isSelected)
+    }
+    
+    private func customBg() -> LinearGradient {
+        switch settings.selectedTheme {
+        case .system:
+            return systemScheme == .dark
+            ? LinearGradient(
+                colors: [Color(r: 164, g: 0, b: 219),
+                         Color(r: 87, g: 0, b: 117)],
+                startPoint: .top, endPoint: .bottom
+            )
+            : LinearGradient(
+                colors: [Color(r: 232, g: 163, b: 255),
+                         Color(r: 204, g: 54, b: 255)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .light:
+            return LinearGradient(
+                colors: [Color(r: 232, g: 163, b: 255),
+                         Color(r: 204, g: 54, b: 255)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .dark:
+            return LinearGradient(
+                colors: [Color(r: 164, g: 0, b: 219),
+                         Color(r: 87, g: 0, b: 117)],
+                startPoint: .top, endPoint: .bottom
+            )
+        }
+    }
+}
+
+#Preview {
+    SearchView()
+        .environmentObject(ViewModel())
+}

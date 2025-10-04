@@ -21,6 +21,16 @@ class ViewModel: ObservableObject {
         }
     }
     
+    @Published var filteredTasks: [TaskItem] = []
+    @Published var searchFilters = SearchFilters()
+    
+    struct SearchFilters {
+        var searchText: String = ""
+        var category: String = "All"
+        var difficulty: String = "Easy"
+        var time: String = "Up to 2 min"
+    }
+    
     init() {
         if let savedTheme = UserDefaults.standard.string(forKey: "selectedTheme"),
            let theme = AppTheme(rawValue: savedTheme) {
@@ -468,4 +478,58 @@ extension ViewModel {
 
 extension Notification.Name {
     static let closeAllSheets = Notification.Name("closeAllSheets")
+}
+
+
+//MARK: - Search and Filter
+extension ViewModel {
+    
+    func filterTasks(filters: SearchFilters) {
+        isLoading = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            var filtered = self.myTasks
+            
+            if !filters.searchText.isEmpty && filters.searchText != " " {
+                filtered = filtered.filter { task in
+                    task.title.localizedCaseInsensitiveContains(filters.searchText) ||
+                    task.description.localizedCaseInsensitiveContains(filters.searchText) ||
+                    task.tags.contains { $0.localizedCaseInsensitiveContains(filters.searchText) }
+                }
+            }
+            
+            if filters.category != "All" {
+                filtered = filtered.filter { $0.category == filters.category }
+            }
+            
+            if filters.difficulty != "All" {
+                filtered = filtered.filter { $0.difficulty == filters.difficulty }
+            }
+            
+            filtered = filtered.filter { task in
+                switch filters.time {
+                case "Up to 2 min":
+                    return task.estimatedTime <= 2
+                case "Up to 5 min":
+                    return task.estimatedTime <= 5
+                case "Up to 10 min":
+                    return task.estimatedTime <= 10
+                default:
+                    return true
+                }
+            }
+            
+            self.filteredTasks = filtered
+            self.isLoading = false
+        }
+    }
+    
+    func clearSearchFilters() {
+        searchFilters = SearchFilters()
+        filteredTasks = []
+    }
+    
+    func applyCurrentFilters() {
+        filterTasks(filters: searchFilters)
+    }
 }
