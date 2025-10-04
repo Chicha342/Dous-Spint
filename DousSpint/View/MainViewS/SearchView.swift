@@ -189,6 +189,14 @@ struct SearchView: View {
                             .padding(.top)
                             .padding(.horizontal)
                         
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                            ForEach(settings.recentSearchesArray, id: \.self) { search in
+                                RecentSercesContainer(text: search)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        
                         Spacer()
                     }
                     .padding(.bottom, 400)
@@ -229,6 +237,7 @@ struct SearchView: View {
                         isLoading = false
                         settings.applyCurrentFilters()
                         isShowList = true
+                        settings.recentSearchesArray.append(settings.searchFilters.searchText)
                     }
                 }, height: 56).opacity(isLoading ? 0.6 : 1)
             }

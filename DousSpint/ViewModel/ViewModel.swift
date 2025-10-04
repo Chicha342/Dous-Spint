@@ -39,6 +39,7 @@ class ViewModel: ObservableObject {
         
         loadSpinResults()
         loadFavorites()
+        loadRecentSearches()
     }
     
     @Published var selectedTheme: AppTheme = .system {
@@ -68,6 +69,23 @@ class ViewModel: ObservableObject {
         }
     }
     
+    
+    @Published var recentSearchesArray: [String] = [] {
+        didSet {
+            saveRecentSearches()
+        }
+    }
+    
+    private func saveRecentSearches() {
+        UserDefaults.standard.set(recentSearchesArray, forKey: "recentSearches")
+    }
+
+    private func loadRecentSearches() {
+        if let searches = UserDefaults.standard.array(forKey: "recentSearches") as? [String] {
+            recentSearchesArray = searches
+        }
+    }
+    
     @Published var isLoading: Bool = false
     @Published var mainError: Bool = false
     
@@ -77,6 +95,26 @@ enum AppTheme: String, CaseIterable {
     case system = "System"
     case light = "Light"
     case dark = "Dark"
+}
+
+// MARK: - Reset Progress
+extension ViewModel {
+    func resetAllProgress() {
+        spinResults.removeAll()
+        
+        favorites.removeAll()
+        
+        clearSearchFilters()
+        
+        navigationPath = NavigationPath()
+        
+        recentSearchesArray.removeAll()
+        
+        UserDefaults.standard.removeObject(forKey: "spinResults")
+        UserDefaults.standard.removeObject(forKey: "favorites")
+        
+        objectWillChange.send()
+    }
 }
 
 //MARK: - Data
@@ -99,6 +137,37 @@ extension ViewModel {
         
         return completedResults.compactMap { result in
             allTasks.first { $0.id == result.taskId }
+        }
+    }
+    
+    var completedTasksCount: Int {
+        self.spinResults.filter { $0.status == .completed }.count
+    }
+    
+    var currentStreak: Int {
+        let completedResults = self.spinResults.filter { $0.status == .completed }
+        
+        guard !completedResults.isEmpty else { return 0 }
+        
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+        
+        let hasToday = completedResults.contains { result in
+            calendar.isDateInToday(result.completedAt ?? result.date)
+        }
+        
+        let hasYesterday = completedResults.contains { result in
+            let date = calendar.startOfDay(for: result.completedAt ?? result.date)
+            return date == yesterday
+        }
+        
+        if hasToday {
+            return hasYesterday ? 2 : 1
+        } else if hasYesterday {
+            return 1
+        } else {
+            return 0
         }
     }
     
@@ -483,7 +552,6 @@ extension Notification.Name {
 
 //MARK: - Search and Filter
 extension ViewModel {
-    
     func filterTasks(filters: SearchFilters) {
         isLoading = true
         
@@ -531,5 +599,134 @@ extension ViewModel {
     
     func applyCurrentFilters() {
         filterTasks(filters: searchFilters)
+    }
+}
+
+//MARK: - Statistics Filtering
+extension ViewModel {
+    
+    func completedTasks(for period: String) -> [SpinResult] {
+        let completed = spinResults.filter { $0.status == .completed }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        
+        switch period {
+        case "Week":
+            let weekAgo = calendar.date(byAdding: .day, value: -7, to: now)!
+            return completed.filter {
+                let completionDate = $0.completedAt ?? $0.date
+                return completionDate >= weekAgo
+            }
+        case "Month":
+            let monthAgo = calendar.date(byAdding: .month, value: -1, to: now)!
+            return completed.filter {
+                let completionDate = $0.completedAt ?? $0.date
+                return completionDate >= monthAgo
+            }
+        case "All":
+            return completed
+        default:
+            return completed
+        }
+    }
+    
+    func completedTasksCount(for period: String) -> Int {
+        return completedTasks(for: period).count
+    }
+    
+    func currentStreak(for period: String) -> Int {
+        let completedResults = completedTasks(for: period)
+        
+        guard !completedResults.isEmpty else { return 0 }
+        
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        if period == "All" {
+            let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+            
+            let hasToday = completedResults.contains { result in
+                calendar.isDateInToday(result.completedAt ?? result.date)
+            }
+            
+            let hasYesterday = completedResults.contains { result in
+                let date = calendar.startOfDay(for: result.completedAt ?? result.date)
+                return date == yesterday
+            }
+            
+            if hasToday {
+                return hasYesterday ? 2 : 1
+            } else if hasYesterday {
+                return 1
+            } else {
+                return 0
+            }
+        } else {
+            var streak = 0
+            var currentDate = today
+            
+            while streak < (period == "Week" ? 7 : 30) {
+                let hasTaskOnDate = completedResults.contains { result in
+                    calendar.isDate(result.completedAt ?? result.date, inSameDayAs: currentDate)
+                }
+                
+                if hasTaskOnDate {
+                    streak += 1
+                    currentDate = calendar.date(byAdding: .day, value: -1, to: currentDate)!
+                } else {
+                    break
+                }
+            }
+            
+            return streak
+        }
+    }
+    
+    func categoryStats(for period: String) -> [(key: String, value: Int)] {
+        let completedResults = completedTasks(for: period)
+        var stats: [String: Int] = [:]
+        
+        for result in completedResults {
+            if let task = allTasks.first(where: { $0.id == result.taskId }) {
+                stats[task.category, default: 0] += 1
+            }
+        }
+        
+        return stats.sorted { $0.value > $1.value }
+    }
+    
+    func weeklyStats(for period: String) -> [StatisticsGraph.WeekStat] {
+        let completed = completedTasks(for: period)
+        let calendar = Calendar.current
+        
+        var stats: [String: Int] = [:]
+        let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        
+        for day in days {
+            stats[day] = 0
+        }
+        
+        for result in completed {
+            let date = result.completedAt ?? result.date
+            let weekday = calendar.component(.weekday, from: date)
+            let dayName = dayName(from: weekday)
+            stats[dayName] = (stats[dayName] ?? 0) + 1
+        }
+        
+        return days.map { StatisticsGraph.WeekStat(day: $0, count: stats[$0] ?? 0) }
+    }
+    
+    private func dayName(from weekday: Int) -> String {
+        switch weekday {
+        case 1: return "Sun"
+        case 2: return "Mon"
+        case 3: return "Tue"
+        case 4: return "Wed"
+        case 5: return "Thu"
+        case 6: return "Fri"
+        case 7: return "Sat"
+        default: return "Unknown"
+        }
     }
 }

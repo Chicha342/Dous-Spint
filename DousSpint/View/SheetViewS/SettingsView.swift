@@ -276,7 +276,8 @@ struct SettingsView: View {
             if resetProgress {
                 CustomAlert(
                     actionPrimaryButton: {
-                        
+                        viewModel.resetAllProgress()
+                        resetProgress = false
                     },
                     actionSecondaryButton: {
                         withAnimation(.easeInOut(duration: 0.3)) {
