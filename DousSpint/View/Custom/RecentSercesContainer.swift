@@ -15,7 +15,7 @@ struct RecentSercesContainer: View {
     var body: some View {
         Text(text)
             .foregroundStyle(customColor())
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: 25)
             .font(.poppins(.regular, size: 16))
             .padding()
             .overlay {

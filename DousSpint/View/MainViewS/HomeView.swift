@@ -154,7 +154,7 @@ struct HomeView: View {
                         .font(.poppins(.regular, size: 16))
                         .foregroundColor(settings.loadingTextColor)
                 }
-                .padding(.bottom, 40)
+                .padding(.bottom, 60)
                 
             }
             if settings.mainError {

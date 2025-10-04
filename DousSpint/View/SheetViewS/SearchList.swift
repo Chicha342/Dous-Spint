@@ -99,7 +99,7 @@ struct SearchList: View {
                         ScrollView{
                             DropdownFilter(title: "Status", options: categoryFilters, selection: $selectedCategory)
                                 .padding(.horizontal)
-                                .padding(.bottom)
+                                .padding(.vertical)
                             
                             LazyVStack(spacing: 12) {
                                 ForEach(sortedTasks) { task in
