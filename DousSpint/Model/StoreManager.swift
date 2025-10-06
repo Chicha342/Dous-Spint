@@ -8,68 +8,69 @@
 import Foundation
 import StoreKit
 
+@MainActor
 final class StoreManager: ObservableObject {
     @Published var purchasedDarkTheme = false
     @Published var purchasedExport = false
-    
     @Published var products: [Product] = []
     
     private let darkThemeId = "dark_Theme_unlock"
     private let exportDataId = "export_data_unlock"
     
     init() {
-        Task{
+        Task {
             await fetchProducts()
             await updatePurchasedStatus()
         }
     }
-
-    func fetchProducts() async{
-        do{
+    
+    // MARK: - Fetch Products
+    func fetchProducts() async {
+        do {
             let storeProducts = try await Product.products(for: [darkThemeId, exportDataId])
-            DispatchQueue.main.async{
-                self.products = storeProducts
-            }
-        }catch{
+            self.products = storeProducts
+        } catch {
             print("Error loading products: \(error)")
         }
     }
     
+    // MARK: - Purchase Product
     func purchase(_ product: Product) async {
-        do{
+        do {
             let result = try await product.purchase()
+            
             switch result {
-            case .success(let verefication):
-                if case .verified(let transaction) = verefication {
+            case .success(let verification):
+                if case .verified(let transaction) = verification {
+                    // Завершение транзакции обязательно для SK2
                     await transaction.finish()
                     await updatePurchasedStatus()
                 }
             case .userCancelled:
                 print("User cancelled")
             case .pending:
-                print("Pending...")
+                print("Purchase pending...")
+            @unknown default:
+                break
             }
-        }catch{
+            
+        } catch {
             print("Error purchasing product: \(error)")
         }
     }
     
+    // MARK: - Update Purchased Status
     func updatePurchasedStatus() async {
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result else { continue }
-            DispatchQueue.main.async {
-                switch transaction.productID {
-                case self.darkThemeId:
-                    self.purchasedDarkTheme = true
-                case self.exportDataId:
-                    self.purchasedExport = true
-                default:
-                    break
-                }
+            switch transaction.productID {
+            case darkThemeId:
+                purchasedDarkTheme = true
+            case exportDataId:
+                purchasedExport = true
+            default:
+                break
             }
         }
     }
-    
-    
 }
-
