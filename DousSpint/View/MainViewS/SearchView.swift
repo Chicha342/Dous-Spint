@@ -183,13 +183,15 @@ struct SearchView: View {
                         .padding(.horizontal)
                         
                         //MARK: - RecentSearches
+                        if !settings.recentSearchesArray.isEmpty {
+                            
                         Text("Recent searches".uppercased())
                             .font(.poppins(.regular, size: 12))
                             .foregroundColor(settings.buttonTextColor)
                             .padding(.top)
                             .padding(.horizontal)
                         
-                        if !settings.recentSearchesArray.isEmpty {
+                        
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                                 ForEach(settings.recentSearchesArray, id: \.self) { search in
                                     RecentSercesContainer(text: search)
