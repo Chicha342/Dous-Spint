@@ -27,21 +27,6 @@ struct OnboardingView: View {
         }
     }
     
-    private var skipColor: Color {
-        switch settings.selectedTheme {
-        case .system:
-            return Color(UIColor { traitCollection in
-                return traitCollection.userInterfaceStyle == .dark ?
-                UIColor(red: 255/255, green: 235/255, blue: 192/255, alpha: 1):
-                UIColor(red: 255/255, green: 123/255, blue: 0/255, alpha: 1)
-            })
-        case .light:
-            return .init(r: 243, g: 0, b: 237)
-        case .dark:
-            return .init(r: 255, g: 123, b: 0)
-        }
-    }
-    
     private var pages: [OnboardingPage] {
         [
             OnboardingPage(
@@ -78,7 +63,7 @@ struct OnboardingView: View {
                     }
                     .font(.calistoga(size: 24))
                     .padding(.trailing)
-                    .foregroundColor(skipColor)
+                    .foregroundColor(settings.headerTextColor)
                 }
                 .padding(.horizontal, 24)
                 .padding(.top)
