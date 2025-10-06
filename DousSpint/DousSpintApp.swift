@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct DousSpintApp: App {
+    @StateObject var viewModel = ViewModel()
+    @StateObject var storeManager = StoreManager()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(viewModel)
+                .environmentObject(storeManager)
         }
     }
 }
