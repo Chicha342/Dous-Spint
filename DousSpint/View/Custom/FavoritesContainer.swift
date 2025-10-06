@@ -13,7 +13,7 @@ struct FavoritesContainer: View {
     @Environment(\.colorScheme) var systemScheme
     
     @EnvironmentObject var settings: ViewModel
-    
+     
     var textColor: Color {
         switch settings.selectedTheme {
         case .system:
@@ -78,11 +78,40 @@ struct FavoritesContainer: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: 165)
-        .background(settings.themeBackgroundButton(for: systemScheme))
+        .background(themeBackgroundButton(for: systemScheme))
         .cornerRadius(20)
         .overlay {
             RoundedRectangle(cornerRadius: 24)
                 .stroke(Color.init(r: 246, g: 64, b: 241, alpha: 0.45), lineWidth: 1)
+        }
+    }
+    
+    func themeBackgroundButton(for systemScheme: ColorScheme) -> LinearGradient {
+        switch settings.selectedTheme {
+        case .light:
+            return LinearGradient(
+                colors: [Color(r: 233, g: 219, b: 255),
+                         Color(r: 246, g: 203, b: 255)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .dark:
+            return LinearGradient(
+                colors: [Color(r: 51, g: 13, b: 109),
+                         Color(r: 70, g: 8, b: 83)],
+                startPoint: .top, endPoint: .bottom
+            )
+        case .system:
+            return systemScheme == .dark
+            ? LinearGradient(
+                colors: [Color(r: 51, g: 13, b: 109),
+                         Color(r: 70, g: 8, b: 83)],
+                startPoint: .top, endPoint: .bottom
+            )
+            : LinearGradient(
+                colors: [Color(r: 233, g: 219, b: 255),
+                         Color(r: 246, g: 203, b: 255)],
+                startPoint: .top, endPoint: .bottom
+            )
         }
     }
     

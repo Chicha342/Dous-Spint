@@ -193,6 +193,9 @@ struct SearchView: View {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
                                 ForEach(settings.recentSearchesArray, id: \.self) { search in
                                     RecentSercesContainer(text: search)
+                                        .onTapGesture {
+                                            settings.searchFilters.searchText = search
+                                        }
                                 }
                             }
                             .padding(.horizontal)
@@ -202,7 +205,28 @@ struct SearchView: View {
                         
                         Spacer()
                     }
-                    .padding(.bottom, 400)
+                    
+                    VStack(spacing: 15){
+                        Spacer()
+                        
+                        SecondMainButton(title: "Clear filter", action: {
+                            settings.clearSearchFilters()
+                        }, height: 56).opacity(isLoading ? 0.6 : 1)
+                        
+                        MainCustomButton(title: "Apply", action: {
+                            isLoading = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                isLoading = false
+                                settings.applyCurrentFilters()
+                                isShowList = true
+                                if !settings.searchFilters.searchText.isEmpty{
+                                    settings.recentSearchesArray.append(settings.searchFilters.searchText)
+                                }
+                            }
+                        }, height: 56).opacity(isLoading ? 0.6 : 1)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
                 }
                 .overlay(overlayContent())
             }
@@ -226,28 +250,6 @@ struct SearchView: View {
                 .padding(.bottom, 40)
                 
             }
-            
-            VStack(spacing: 15){
-                Spacer()
-                
-                SecondMainButton(title: "Clear filter", action: {
-                    settings.clearSearchFilters()
-                }, height: 56).opacity(isLoading ? 0.6 : 1)
-                
-                MainCustomButton(title: "Apply", action: {
-                    isLoading = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        isLoading = false
-                        settings.applyCurrentFilters()
-                        isShowList = true
-                        if !settings.searchFilters.searchText.isEmpty{
-                            settings.recentSearchesArray.append(settings.searchFilters.searchText)
-                        }
-                    }
-                }, height: 56).opacity(isLoading ? 0.6 : 1)
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 20)
         }
         
     }

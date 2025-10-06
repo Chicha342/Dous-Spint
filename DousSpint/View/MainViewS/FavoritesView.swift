@@ -10,7 +10,7 @@ import SwiftUI
 struct FavoritesView: View {
     @EnvironmentObject var settings: ViewModel
     @Environment(\.colorScheme) var systemScheme
-    
+     
     var body: some View {
         ZStack{
             settings.backgroundColor

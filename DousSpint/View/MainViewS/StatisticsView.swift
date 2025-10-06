@@ -53,7 +53,7 @@ struct StatisticsView: View {
                         VStack(alignment: .leading){
                             HStack(alignment: .bottom, spacing: 16){
                                 VStack(alignment: .leading){
-                                    Text("Total tasks    completed:")
+                                    Text("Total tasks\ncompleted:")
                                         .font(.poppins(.regular, size: 16))
                                         .foregroundColor(viewModel.buttonTextColor)
                                     

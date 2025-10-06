@@ -80,7 +80,7 @@ struct CompletedTask: View {
                         }, height: 56)
                         
                         SecondMainButton(title: "Next Random", action: {
-                            
+                            NotificationCenter.default.post(name: .closeAllSheets, object: nil)
                         }, height: 56)
                         
                         SecondMainButton(title: "Back To Home", action: {
