@@ -14,11 +14,15 @@ struct SettingsView: View {
     
     @State private var isExportData = false
     @State private var resetProgress = false
-    
     @State private var isShowAbout = false
-    
     @State private var isAutoStartNext = false
     @State private var isHaptics = false
+    
+    @State private var isPurchasing = false
+    @State private var purchaseErrorMessage: String? = nil
+    @State private var showPurchaseAlert = false
+    
+    @EnvironmentObject var storeManager: StoreManager
     
     var body: some View {
         ZStack{
@@ -58,34 +62,34 @@ struct SettingsView: View {
                             .padding(.top)
                         
                         VStack{
-                            Button(action: {
-                                withAnimation {
-                                    viewModel.changeTheme(.system)
-                                }
-                            }, label: {
-                                HStack{
-                                    Circle()
-                                        .fill(Color.clear)
-                                        .frame(width: 24, height: 24)
-                                        .overlay {
-                                            Circle()
-                                                .stroke(style: StrokeStyle(lineWidth: 2))
-                                                .fill(viewModel.selectedTheme == .system ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
-                                            
-                                            if viewModel.selectedTheme == .system {
-                                                Circle()
-                                                    .fill(Color.init(r: 243, g: 0, b: 237))
-                                                    .frame(width: 12, height: 12)
-                                            }
-                                        }
-                                    
-                                    Text("System")
-                                        .font(.poppins(.regular, size: 16))
-                                        .foregroundColor(viewModel.buttonTextColor)
-                                    
-                                    Spacer()
-                                }
-                            })
+                            //                            Button(action: {
+                            //                                withAnimation {
+                            //                                    viewModel.changeTheme(.system)
+                            //                                }
+                            //                            }, label: {
+                            //                                HStack{
+                            //                                    Circle()
+                            //                                        .fill(Color.clear)
+                            //                                        .frame(width: 24, height: 24)
+                            //                                        .overlay {
+                            //                                            Circle()
+                            //                                                .stroke(style: StrokeStyle(lineWidth: 2))
+                            //                                                .fill(viewModel.selectedTheme == .system ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
+                            //
+                            //                                            if viewModel.selectedTheme == .system {
+                            //                                                Circle()
+                            //                                                    .fill(Color.init(r: 243, g: 0, b: 237))
+                            //                                                    .frame(width: 12, height: 12)
+                            //                                            }
+                            //                                        }
+                            //
+                            //                                    Text("System")
+                            //                                        .font(.poppins(.regular, size: 16))
+                            //                                        .foregroundColor(viewModel.buttonTextColor)
+                            //
+                            //                                    Spacer()
+                            //                                }
+                            //                            })
                             
                             Button(action: {
                                 withAnimation {
@@ -118,34 +122,60 @@ struct SettingsView: View {
                                 }
                             })
                             
-                            Button(action: {
-                                withAnimation {
-                                    viewModel.changeTheme(.dark)
-                                }
-                            }, label: {
-                                HStack{
-                                    Circle()
-                                        .fill(Color.clear)
-                                        .frame(width: 24, height: 24)
-                                        .overlay {
-                                            Circle()
-                                                .stroke(style: StrokeStyle(lineWidth: 2))
-                                                .fill(viewModel.selectedTheme == .dark ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
-                                            
-                                            if viewModel.selectedTheme == .dark {
+                            if storeManager.purchasedDarkTheme{
+                                Button(action: {
+                                    withAnimation {
+                                        viewModel.changeTheme(.dark)
+                                    }
+                                }, label: {
+                                    HStack{
+                                        Circle()
+                                            .fill(Color.clear)
+                                            .frame(width: 24, height: 24)
+                                            .overlay {
                                                 Circle()
-                                                    .fill(Color.init(r: 243, g: 0, b: 237))
-                                                    .frame(width: 12, height: 12)
+                                                    .stroke(style: StrokeStyle(lineWidth: 2))
+                                                    .fill(viewModel.selectedTheme == .dark ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
+                                                
+                                                if viewModel.selectedTheme == .dark {
+                                                    Circle()
+                                                        .fill(Color.init(r: 243, g: 0, b: 237))
+                                                        .frame(width: 12, height: 12)
+                                                }
                                             }
-                                        }
-                                    
-                                    Text("Dark")
-                                        .font(.poppins(.regular, size: 16))
-                                        .foregroundColor(viewModel.buttonTextColor)
-                                    
-                                    Spacer()
-                                }
-                            })
+                                        
+                                        Text("Dark")
+                                            .font(.poppins(.regular, size: 16))
+                                            .foregroundColor(viewModel.buttonTextColor)
+                                        
+                                        Spacer()
+                                    }
+                                })
+                            }else{
+                                Button(action: {
+                                    withAnimation {
+                                        purchaseProduct(id: "dark_Theme_unlock")
+                                    }
+                                }, label: {
+                                    HStack{
+                                        Circle()
+                                            .fill(Color.clear)
+                                            .frame(width: 24, height: 24)
+                                            .overlay {
+                                                Circle()
+                                                    .stroke(style: StrokeStyle(lineWidth: 2))
+                                                    .fill(viewModel.selectedTheme == .dark ? Color.init(r: 243, g: 0, b: 237) : Color.init(r: 185, g: 185, b: 185))
+                                            }
+                                        
+                                        Text("Dark (Unlock 0.99$)")
+                                            .font(.poppins(.regular, size: 16))
+                                            .foregroundColor(viewModel.buttonTextColor)
+                                        
+                                        Spacer()
+                                    }
+                                })
+                            }
+                            
                         }
                         
                         Text("PREFERENCES")
@@ -208,9 +238,15 @@ struct SettingsView: View {
                             .padding(.top)
                         
                         VStack{
-                            ExportButton(title: "Export History", action: {
-                                isExportData = true
-                            })
+                            if storeManager.purchasedExport {
+                                ExportButton(title: "Export History", action: {
+                                    isExportData = true
+                                })
+                            }else {
+                                ExportButton(title: "Export History (Unlock 1.99$)", action: {
+                                    purchaseProduct(id: "export_data_unlock")
+                                })
+                            }
                             
                             ResetButton(title: "Reset Progress", action: {
                                 resetProgress = true
@@ -257,7 +293,10 @@ struct SettingsView: View {
             if isExportData {
                 CustomAlert(
                     actionPrimaryButton: {
-                        
+                        viewModel.exportDataToCSV()
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            isExportData = false
+                        }
                     },
                     actionSecondaryButton: {
                         withAnimation(.easeInOut(duration: 0.3)) {
@@ -293,6 +332,18 @@ struct SettingsView: View {
                 .padding(.horizontal, 8)
             }
             
+            
+            if isPurchasing {
+                VStack{
+                    ProgressView()
+                    
+                    Text("Loading...")
+                        .font(.poppins(.regular, size: 16))
+                        .foregroundColor(viewModel.loadingTextColor)
+                }
+                .padding(.bottom, 60)
+            }
+            
         }
         .animation(.easeInOut(duration: 0.3), value: isExportData)
         .animation(.easeInOut(duration: 0.3), value: resetProgress)
@@ -300,16 +351,33 @@ struct SettingsView: View {
         .fullScreenCover(isPresented: $isShowAbout) {
             AboutView()
         }
+        .alert("Purchase Failed", isPresented: $showPurchaseAlert, actions: {
+            Button("OK", role: .cancel) {}
+        }, message: {
+            Text(purchaseErrorMessage ?? "Unknown error")
+        })
+        .onAppear {
+            Task { await storeManager.fetchProducts() }
+        }
+    }
+    
+    private func purchaseProduct(id: String) {
+        guard let product = storeManager.products.first(where: { $0.id == id }) else { return }
+        isPurchasing = true
+        Task {
+            do {
+                try await storeManager.purchase(product)
+            } catch {
+                purchaseErrorMessage = error.localizedDescription
+                showPurchaseAlert = true
+            }
+            isPurchasing = false
+        }
     }
 }
 
 #Preview {
     SettingsView()
         .environmentObject(ViewModel())
-}
-
-#Preview {
-    SettingsView()
-        .environmentObject(ViewModel())
-        .colorScheme(.dark)
+        .environmentObject(StoreManager())
 }

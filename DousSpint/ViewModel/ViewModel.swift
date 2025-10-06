@@ -42,7 +42,7 @@ class ViewModel: ObservableObject {
         loadRecentSearches()
     }
     
-    @Published var selectedTheme: AppTheme = .system {
+    @Published var selectedTheme: AppTheme = .light {
         didSet {
             UserDefaults.standard.set(selectedTheme.rawValue, forKey: "selectedTheme")
         }
@@ -256,6 +256,33 @@ extension ViewModel {
         return spinResults
             .filter { $0.status == .completed || $0.status == .skipped }
             .sorted { ($0.completedAt ?? $0.date) > ($1.completedAt ?? $1.date) }
+    }
+    
+    func exportDataToCSV() {
+        let header = "Task Title, Category, Status, Date\n"
+        let rows = spinResults.map { result in
+            let task = allTasks.first { $0.id == result.taskId }
+            let title = task?.title ?? "Unknown"
+            let category = task?.category ?? "Unknown"
+            let status = result.status.rawValue
+            let date = DateFormatter.localizedString(from: result.date, dateStyle: .short, timeStyle: .short)
+            return "\(title),\(category),\(status),\(date)"
+        }.joined(separator: "\n")
+        
+        let csv = header + rows
+        
+        let fileName = "DousSpint_Export.csv"
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        
+        do {
+            try csv.write(to: tempURL, atomically: true, encoding: .utf8)
+            let av = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                scene.windows.first?.rootViewController?.present(av, animated: true)
+            }
+        } catch {
+            print("Ошибка при создании CSV: \(error)")
+        }
     }
 }
 
