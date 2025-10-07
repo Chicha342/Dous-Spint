@@ -28,15 +28,15 @@ workflows:
 
       - name: Increment build number
         script: |
+          echo "SCM_BUILD_DIR = $SCM_BUILD_DIR"
+          echo "Listing files in SCM_BUILD_DIR:"
+          ls -la $SCM_BUILD_DIR
           cd $SCM_BUILD_DIR
-          echo "Current directory:"
+          echo "Running agvtool in directory:"
           pwd
-          echo "Contents of SCM_BUILD_DIR:"
-          ls -la
-          # Получаем последний номер сборки с App Store Connect
+          agvtool what-version
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
           echo "Latest build number from App Store Connect: $LATEST_BUILD_NUMBER"
-          # Увеличиваем на 1
           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
 
       - name: Build ipa for distribution
