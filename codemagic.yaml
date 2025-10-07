@@ -28,12 +28,13 @@ workflows:
 
       - name: Increment build number
         script: |
-          echo "SCM_BUILD_DIR = $SCM_BUILD_DIR"
-          echo "Listing files in SCM_BUILD_DIR:"
-          ls -la $SCM_BUILD_DIR
-          cd $SCM_BUILD_DIR
-          echo "Running agvtool in directory:"
+          echo "Changing directory to project folder..."
+          cd $CM_WORKING_DIRECTORY
+          echo "Current directory:"
           pwd
+          echo "Listing files in repository root:"
+          ls -la
+          echo "Running agvtool:"
           agvtool what-version
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
           echo "Latest build number from App Store Connect: $LATEST_BUILD_NUMBER"
@@ -42,7 +43,7 @@ workflows:
       - name: Build ipa for distribution
         script: |
           xcode-project build-ipa \
-            --project "$SCM_BUILD_DIR/$XCODE_PROJECT" \
+            --project "$CM_WORKING_DIRECTORY/$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
 
     artifacts:
