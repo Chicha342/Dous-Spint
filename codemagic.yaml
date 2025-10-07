@@ -1,52 +1,57 @@
 workflows:
-    ios-native-workflow:
+  ios-native-workflow:
     name: iOS Native
     max_build_duration: 120
     instance_type: mac_mini_m2
-    
+
     integrations:
-        app_store_connect: dousKey
-    
+      app_store_connect: dousKey
+
     environment:
-        ios_signing:
+      ios_signing:
         distribution_type: app_store
         bundle_identifier: com.dousspint.app
-        
-        vars:
+
+      vars:
         BUNDLE_ID: "com.dousspint.app"
         XCODE_PROJECT: "DousSpint.xcodeproj"
         XCODE_SCHEME: "DousSpint"
         APP_STORE_APPLE_ID: "6753706789"
-        
-        xcode: latest
-        cocoapods: default
-    
+
+      xcode: latest
+      cocoapods: default
+
     scripts:
-        - name: Set up provisioning profiles settings on Xcode project
-        script: xcode-project use-profiles
-        
-        - name: Increment build number
+      - name: Set up provisioning profiles settings on Xcode project
+        script: |
+          xcode-project use-profiles
+
+      - name: Increment build number
         script: |
           cd $SCM_BUILD_DIR
+          echo "Current directory:"
+          pwd
+          echo "Contents of SCM_BUILD_DIR:"
+          ls -la
+          # Получаем последний номер сборки с App Store Connect
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
+          echo "Latest build number from App Store Connect: $LATEST_BUILD_NUMBER"
+          # Увеличиваем на 1
           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
-        
-        - name: Increment build number
-    script: |
-    cd $SCM_BUILD_DIR
-    echo "Current directory:"
-    pwd
-    ls -la
-    LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
-    agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
-    
+
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa \
+            --project "$SCM_BUILD_DIR/$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+
     artifacts:
-        - build/ios/ipa/*.ipa
-        - /tmp/xcodebuild_logs/*.log
-        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
-    
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
     publishing:
-        app_store_connect:
+      app_store_connect:
         auth: integration
         submit_to_testflight: true
