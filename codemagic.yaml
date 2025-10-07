@@ -22,29 +22,33 @@ workflows:
       cocoapods: default
 
     scripts:
-      - name: Set up provisioning profiles settings on Xcode project
+      - name: Set up provisioning profiles
         script: |
+          echo "Setting up provisioning profiles..."
           xcode-project use-profiles
 
       - name: Increment build number
         script: |
-          echo "Changing directory to project folder..."
+          echo "Current working directory: $CM_WORKING_DIRECTORY"
           cd $CM_WORKING_DIRECTORY
-          echo "Current directory:"
-          pwd
           echo "Listing files in repository root:"
           ls -la
-          echo "Running agvtool:"
+          echo "Running agvtool to check current version..."
           agvtool what-version
+          echo "Fetching latest build number from App Store Connect..."
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID")
-          echo "Latest build number from App Store Connect: $LATEST_BUILD_NUMBER"
+          echo "Latest build number: $LATEST_BUILD_NUMBER"
+          echo "Incrementing build number..."
           agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+          echo "Build number incremented successfully."
 
-      - name: Build ipa for distribution
+      - name: Build IPA for distribution
         script: |
+          echo "Building IPA..."
           xcode-project build-ipa \
             --project "$CM_WORKING_DIRECTORY/$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
+          echo "IPA build finished."
 
     artifacts:
       - build/ios/ipa/*.ipa
