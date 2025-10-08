@@ -34,6 +34,28 @@ final class StoreManager: ObservableObject {
         }
     }
     
+    @Published var restoreSuccess = false
+    @Published var restoreError: String? = nil
+    
+    // MARK: - Restore Purchases
+    func restorePurchases() async {
+        do {
+            purchasedDarkTheme = false
+            purchasedExport = false
+            
+            await updatePurchasedStatus()
+            
+            if purchasedDarkTheme || purchasedExport {
+                restoreSuccess = true
+                restoreError = nil
+                print("Purchases restored successfully")
+            } else {
+                restoreError = "No previous purchases found"
+                restoreSuccess = false
+            }
+        }
+    }
+    
     // MARK: - Purchase Product
     func purchase(_ product: Product) async {
         do {

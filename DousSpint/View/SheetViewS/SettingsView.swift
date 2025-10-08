@@ -22,6 +22,10 @@ struct SettingsView: View {
     @State private var purchaseErrorMessage: String? = nil
     @State private var showPurchaseAlert = false
     
+    @State private var showRestoreAlert = false
+    @State private var restoreAlertMessage = ""
+    @State private var isRestoring = false
+    
     @EnvironmentObject var storeManager: StoreManager
     
     var body: some View {
@@ -237,7 +241,7 @@ struct SettingsView: View {
                             .cornerRadius(5)
                             .padding(.top)
                         
-                        VStack{
+                        VStack(spacing: 12){
                             if storeManager.purchasedExport {
                                 ExportButton(title: "Export History", action: {
                                     isExportData = true
@@ -248,9 +252,17 @@ struct SettingsView: View {
                                 })
                             }
                             
+                            ExportButton(title: "Restore Purchases", action: {
+                                Task{
+                                    await storeManager.restorePurchases()
+                                }
+                            })
+                            
                             ResetButton(title: "Reset Progress", action: {
                                 resetProgress = true
                             })
+                            
+                            
                         }
                         .padding(.trailing)
                         
@@ -347,7 +359,25 @@ struct SettingsView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: isExportData)
         .animation(.easeInOut(duration: 0.3), value: resetProgress)
-        
+        .alert("Restore Purchases", isPresented: $showRestoreAlert, actions: {
+            Button("OK", role: .cancel) {}
+        }, message: {
+            Text(restoreAlertMessage)
+        })
+        .onChange(of: storeManager.restoreSuccess) { success in
+            if success {
+                restoreAlertMessage = "Your purchases have been successfully restored!"
+                showRestoreAlert = true
+                isRestoring = false
+            }
+        }
+        .onChange(of: storeManager.restoreError) { error in
+            if let error = error {
+                restoreAlertMessage = error
+                showRestoreAlert = true
+                isRestoring = false
+            }
+        }
         .fullScreenCover(isPresented: $isShowAbout) {
             AboutView()
         }
