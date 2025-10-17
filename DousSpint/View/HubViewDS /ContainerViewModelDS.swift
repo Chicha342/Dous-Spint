@@ -73,6 +73,8 @@ private extension ContainerViewModelDS {
             let response = try await NetWorkDS.shared.fetchInstallURL(bundle: "6753706789")
             let raw = response.url.trimmingCharacters(in: .whitespacesAndNewlines)
             
+            print("Server returned URL: \(raw)")
+            
             if let url = URL(string: raw), let scheme = url.scheme, (scheme == "http" || scheme == "https"), !raw.isEmpty {
                 UserDefaults.standard.set(raw, forKey: storedURLKey)
                 saveChecked(.checked)
@@ -90,6 +92,8 @@ private extension ContainerViewModelDS {
             resolved = true
             monitor?.cancel()
             errorMessage = error.localizedDescription
+            
+            print("Failed to fetch server URL: \(error.localizedDescription)")
         }
     }
 }

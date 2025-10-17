@@ -27,12 +27,12 @@ struct DousSpintApp: App {
 
 final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     func applicationWillTerminate(_ application: UIApplication) {
-//        SKPaymentQueue.default().remove(StoreManager.shared)
+
     }
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-//        SKPaymentQueue.default().add(StoreManager.shared)
+
         
         OneSignal.Debug.setLogLevel(.LL_VERBOSE)
         OneSignal.initialize("d0204112-5603-42e3-96c8-1986d365f850", withLaunchOptions: launchOptions)
