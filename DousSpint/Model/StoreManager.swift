@@ -9,7 +9,9 @@ import Foundation
 import StoreKit
 
 @MainActor
-final class StoreManager: ObservableObject {
+final class StoreManager: NSObject, ObservableObject  {
+    static let shared = StoreManager()
+    
     @Published var purchasedDarkTheme = false
     @Published var purchasedExport = false
     @Published var products: [Product] = []
@@ -17,7 +19,8 @@ final class StoreManager: ObservableObject {
     private let darkThemeId = "dark_Theme_unlock"
     private let exportDataId = "export_data_unlock"
     
-    init() {
+    override init() {
+        super.init()
         Task {
             await fetchProducts()
             await updatePurchasedStatus()
