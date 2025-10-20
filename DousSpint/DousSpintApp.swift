@@ -35,7 +35,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
 
         
         OneSignal.Debug.setLogLevel(.LL_VERBOSE)
-        OneSignal.initialize("d0204112-5603-42e3-96c8-1986d365f850", withLaunchOptions: launchOptions)
+        OneSignal.initialize("6d8539c6-2891-4253-bc7e-bc10fc7cf3e3", withLaunchOptions: launchOptions)
         
         return true
     }
