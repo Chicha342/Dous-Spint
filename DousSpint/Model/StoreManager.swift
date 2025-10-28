@@ -99,11 +99,23 @@ final class StoreManager: NSObject, ObservableObject  {
         }
     }
     
-    func paymentQueue(_ queue: SKPaymentQueue,
-                      shouldAddStorePayment payment: SKPayment,
-                      for product: SKProduct) -> Bool {
-        
-        return true
+}
+
+// MARK: - SKPaymentTransactionObserver
+extension StoreManager: SKPaymentTransactionObserver {
+    nonisolated func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        for transaction in transactions {
+            switch transaction.transactionState {
+            case .purchased, .restored:
+                Task {
+                    await updatePurchasedStatus()
+                }
+                SKPaymentQueue.default().finishTransaction(transaction)
+            case .failed:
+                SKPaymentQueue.default().finishTransaction(transaction)
+            default:
+                break
+            }
+        }
     }
-    
 }

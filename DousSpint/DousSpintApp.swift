@@ -11,6 +11,7 @@ import OneSignalFramework
 
 @main
 struct DousSpintApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var viewModel = ViewModel()
     @StateObject var storeManager = StoreManager()
     @StateObject var containerViewModel = ContainerViewModelDS()
@@ -27,12 +28,12 @@ struct DousSpintApp: App {
 
 final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     func applicationWillTerminate(_ application: UIApplication) {
-
+        SKPaymentQueue.default().remove(StoreManager.shared)
     }
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-
+        SKPaymentQueue.default().add(StoreManager.shared)
         
         OneSignal.Debug.setLogLevel(.LL_VERBOSE)
         OneSignal.initialize("6d8539c6-2891-4253-bc7e-bc10fc7cf3e3", withLaunchOptions: launchOptions)
